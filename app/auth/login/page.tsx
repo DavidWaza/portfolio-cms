@@ -67,7 +67,7 @@ const Login = () => {
       </div>
 
       <Card
-        className="w-full max-w-xl shadow-2xl border-0 rounded-3xl overflow-hidden relative z-10"
+        className="w-full max-w-lg shadow-2xl border-0 rounded-3xl overflow-hidden relative z-10"
         style={{ backgroundColor: "#1a1a18" }}
       >
         <CardHeader className="flex flex-col items-center pt-12 pb-8 px-8 relative">
