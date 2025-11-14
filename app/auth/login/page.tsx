@@ -55,7 +55,6 @@ const Login = () => {
       className="min-h-screen flex items-center justify-center p-4"
       style={{ backgroundColor: "#262624" }}
     >
-      {/* Decorative background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div
           className="absolute top-20 left-10 w-72 h-72 rounded-full opacity-5"
@@ -68,11 +67,10 @@ const Login = () => {
       </div>
 
       <Card
-        className="w-full max-w-md shadow-2xl border-0 rounded-3xl overflow-hidden relative z-10"
+        className="w-full max-w-xl shadow-2xl border-0 rounded-3xl overflow-hidden relative z-10"
         style={{ backgroundColor: "#1a1a18" }}
       >
         <CardHeader className="flex flex-col items-center pt-12 pb-8 px-8 relative">
-          {/* Logo/Icon */}
           <div
             className="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 shadow-lg"
             style={{ backgroundColor: "#C6613F" }}
@@ -86,8 +84,6 @@ const Login = () => {
           <p className="text-sm text-gray-400">
             Manage your portfolio with elegance
           </p>
-
-          {/* Decorative line */}
           <div
             className="w-16 h-1 rounded-full mt-4"
             style={{ backgroundColor: "#C6613F" }}
@@ -95,7 +91,6 @@ const Login = () => {
         </CardHeader>
 
         <CardContent className="space-y-6 px-8 pb-10">
-          {/* Email Field */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-300">
               Email Address
@@ -119,7 +114,6 @@ const Login = () => {
             </div>
           </div>
 
-          {/* Password Field */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-300">
               Password
@@ -143,7 +137,6 @@ const Login = () => {
             </div>
           </div>
 
-          {/* Forgot Password */}
           <div className="flex justify-end">
             <button
               className="text-sm font-medium transition-colors"
@@ -153,7 +146,6 @@ const Login = () => {
             </button>
           </div>
 
-          {/* Login Button */}
           <Button
             className="w-full text-white py-6 font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] border-0"
             style={{ backgroundColor: "#C6613F" }}
@@ -162,7 +154,6 @@ const Login = () => {
             Sign In
           </Button>
 
-          {/* Divider */}
           <div className="relative flex items-center justify-center my-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-700"></div>
