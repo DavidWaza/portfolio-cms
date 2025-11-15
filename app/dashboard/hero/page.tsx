@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { sanitizeFileName } from "@/lib/helper";
 import { toast } from "sonner";
+import { getSupabase } from "@/lib/supabase";
 
 export default function HeroPage() {
   const [title, setTitle] = useState<string>("");
@@ -16,6 +17,7 @@ export default function HeroPage() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
 
+  const supabase = getSupabase()
 //  Handle Phone input
   const handlePhoneChange = (index: number, value: string) => {
     if (value.length > 11) return;

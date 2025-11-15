@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
+import { getSupabase } from "@/lib/supabase";
 
 export default function ProjectsPage() {
   const [title, setTitle] = useState("");
@@ -18,6 +19,7 @@ export default function ProjectsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const supabase = getSupabase()
   // Generate years from 1970 to current year
   const years = Array.from(
     { length: new Date().getFullYear() - 1970 + 1 },
