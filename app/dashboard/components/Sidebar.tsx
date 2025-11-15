@@ -4,7 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as Icons from "@phosphor-icons/react";
 
-export function Sidebar() {
+export interface SidebarProps {
+  active: string;
+  setActive: React.Dispatch<React.SetStateAction<string>>;
+}
+
+export function Sidebar({ active, setActive }:SidebarProps) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
 
