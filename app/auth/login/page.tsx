@@ -6,13 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Mail, Lock, Briefcase } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { getSupabase } from "@/lib/supabase";
 import { toast } from "sonner";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const router = useRouter();
 
+  const supabase = getSupabase()
   const login = async () => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
