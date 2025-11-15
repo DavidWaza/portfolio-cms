@@ -1,8 +1,6 @@
-'use client'
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
-import { createClient } from "@supabase/supabase-js";
+"use client";
 
-export const supabaseAdmin = createClientComponentClient();
+import { createClient } from "@supabase/supabase-js";
 
 export const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
