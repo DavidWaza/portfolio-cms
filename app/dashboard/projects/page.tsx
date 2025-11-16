@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { getSupabase } from "@/lib/supabase";
 
@@ -10,12 +9,9 @@ export default function ProjectsPage() {
   const [description, setShortDescription] = useState("");
   const [location, setLocation] = useState("");
   const [application_type, setApplication_type] = useState("");
-
   const [year, setYear] = useState<string>("");
-
   const [tools, setTools] = useState<string[]>([""]);
   const [logo, setLogo] = useState<File | null>(null);
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
