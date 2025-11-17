@@ -1,5 +1,5 @@
 "use client";
-export const dynamic = "force-dynamic"; 
+export const dynamic = "force-dynamic";
 import React, { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,10 +11,13 @@ import { toast } from "sonner";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
+  const [loading, setLoading] = useState(false);
+
   const router = useRouter();
 
-  const supabase = getSupabase()
+  const supabase = getSupabase();
   const login = async () => {
+    setLoading(true);
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email: formData.email,
@@ -44,6 +47,8 @@ const Login = () => {
         className: "p-2",
         position: "top-right",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -138,46 +143,21 @@ const Login = () => {
               />
             </div>
           </div>
-
-          <div className="flex justify-end">
-            <button
-              className="text-sm font-medium transition-colors"
-              style={{ color: "#C6613F" }}
-            >
-              Forgot password?
-            </button>
-          </div>
-
           <Button
-            className="w-full text-white py-6 font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] border-0"
+            className="w-full text-white py-6 font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] border-0 disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ backgroundColor: "#C6613F" }}
             onClick={login}
+            disabled={loading}
           >
-            Sign In
+            {loading ? (
+              <div className="flex items-center justify-center gap-2">
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                Signing In...
+              </div>
+            ) : (
+              "Sign In"
+            )}
           </Button>
-
-          <div className="relative flex items-center justify-center my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-700"></div>
-            </div>
-            <div
-              className="relative px-4 text-sm text-gray-500"
-              style={{ backgroundColor: "#1a1a18" }}
-            >
-              New here?
-            </div>
-          </div>
-
-          {/* Sign Up Link */}
-          <p className="text-center text-sm text-gray-400">
-            Create your account and start building{" "}
-            <button
-              className="font-semibold transition-colors hover:underline"
-              style={{ color: "#C6613F" }}
-            >
-              Sign Up
-            </button>
-          </p>
         </CardContent>
       </Card>
     </div>

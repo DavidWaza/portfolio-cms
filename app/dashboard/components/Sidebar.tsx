@@ -3,16 +3,22 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as Icons from "@phosphor-icons/react";
+import { getSupabase } from "@/config/supabaseClient";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export interface SidebarProps {
   active: string;
   setActive: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export function Sidebar({ active, setActive }:SidebarProps) {
+export function Sidebar({ active, setActive }: SidebarProps) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
+  const supabase = getSupabase();
+  const router = useRouter();
   type IconName = keyof typeof Icons;
 
   const nav: { id: string; label: string; icon: IconName; href: string }[] = [
@@ -55,6 +61,27 @@ export function Sidebar({ active, setActive }:SidebarProps) {
       href: "/dashboard/settings",
     },
   ];
+
+  const handleLogout = async () => {
+    try {
+      setLoggingOut(true);
+
+      const { error } = await supabase.auth.signOut();
+
+      if (error) {
+        toast.error("Logout failed", { position: "top-right" });
+        setLoggingOut(false);
+        return;
+      }
+
+      toast.success("Logged out successfully", { position: "top-right" });
+      router.push("/");
+    } catch (err) {
+      toast.error("Something went wrong", { position: "top-right" });
+    } finally {
+      setLoggingOut(false);
+    }
+  };
 
   return (
     <aside
@@ -121,6 +148,25 @@ export function Sidebar({ active, setActive }:SidebarProps) {
             );
           })}
         </ul>
+        <div className="p-4">
+          <button
+            onClick={handleLogout}
+            disabled={loggingOut}
+            className={`w-full flex items-center gap-3 py-2 rounded-md text-sm hover:bg-slate-50 disabled:opacity-50 text-slate-700 cursor-pointer ${
+              collapsed ? "justify-center" : "justify-start"
+            }`}
+          >
+            {loggingOut ? (
+              <div className="animate-spin h-5 w-5 border-b-2 border-gray-500 rounded-full"></div>
+            ) : (
+              <Icons.Power size={20} color="red" className="font-bold" />
+            )}
+
+            {!collapsed && (
+              <span>{loggingOut ? "Signing out..." : "Sign out"}</span>
+            )}
+          </button>
+        </div>
       </nav>
 
       {/* Footer */}
