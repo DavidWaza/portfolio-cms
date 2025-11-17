@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Mail, Lock, Briefcase } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { getSupabase } from "@/lib/supabase";
+import { getSupabase } from "@/config/supabaseClient";
 import { toast } from "sonner";
 
 const Login = () => {
@@ -31,7 +31,7 @@ const Login = () => {
           className: "p-2",
           position: "top-right",
         });
-        router.push("/dashboard");
+        router.push("/dashboard/home");
         return;
       }
 

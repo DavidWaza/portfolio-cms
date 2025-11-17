@@ -4,60 +4,49 @@ import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { getSupabase } from "@/config/supabaseClient";
 import Image from "next/image";
-import {
-  Plus,
-  X,
-  Upload,
-  Trash2,
-  Calendar,
-  MapPin,
-  Code,
-  Layers,
-} from "lucide-react";
+import { Plus, X, Trash2, Layers } from "lucide-react";
 
-type ProjectProps = {
+type ServiceProps = {
   id: number;
   title: string;
   description: string;
-  location: string;
-  application_type: string;
-  year: string;
-  tools: string[];
-  logo: string;
+  roles: string;
   created_at?: string;
 };
-export default function ProjectsPage() {
+export default function ServicePage() {
   const [title, setTitle] = useState("");
   const [description, setShortDescription] = useState("");
-  const [location, setLocation] = useState("");
-  const [application_type, setApplication_type] = useState("");
-  const [year, setYear] = useState<string>("");
-  const [tools, setTools] = useState<string[]>([""]);
-  const [logo, setLogo] = useState<File | null>(null);
+  const [roles, setRoles] = useState([""]);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showModal, setShowModal] = useState(false);
 
-  const [rows, setRows] = useState<ProjectProps[]>([]);
+  const [rows, setRows] = useState<ServiceProps[]>([]);
   const [fetching, setFetching] = useState(false);
-  const [selectedLogo, setSelectedLogo] = useState<string | null>(null);
 
   const supabase = getSupabase();
 
-  const years = Array.from(
-    { length: new Date().getFullYear() - 1970 + 1 },
-    (_, i) => 1970 + i
-  ).reverse();
+  // Add new roless
+  const addNewRoles = () => setRoles([...roles, ""]);
+  const removeRoleField = (index: number) =>
+    setRoles(roles.filter((_, i) => i !== index));
 
-  const fetchProjects = async () => {
+  // Handle roles value
+  const handleRoleChange = (index: number, value: string) => {
+    const updated = [...roles];
+    updated[index] = value;
+    setRoles(updated);
+  };
+  const fetchServices = async () => {
     setFetching(true);
     const { data, error } = await supabase
-      .from("projects")
+      .from("services")
       .select("*")
       .order("created_at", { ascending: false });
 
     if (error) {
-      toast.error("Failed to fetch projects");
+      toast.error("Failed to fetch services");
     } else {
       setRows(data || []);
     }
@@ -65,50 +54,23 @@ export default function ProjectsPage() {
   };
 
   useEffect(() => {
-    fetchProjects();
+    fetchServices();
   }, []);
 
   const deleteProject = async (id: number) => {
     const confirmed = window.confirm(
-      "Are you sure you want to delete this project?"
+      "Are you sure you want to delete this service?"
     );
     if (!confirmed) return;
 
-    const { error } = await supabase.from("projects").delete().eq("id", id);
+    const { error } = await supabase.from("services").delete().eq("id", id);
 
     if (error) {
-      toast.error("Failed to delete project");
+      toast.error("Failed to delete service");
     } else {
-      toast.success("Project deleted successfully");
-      fetchProjects();
+      toast.success("Service deleted successfully");
+      fetchServices();
     }
-  };
-
-  const addToolField = () => setTools([...tools, ""]);
-  const removeTool = (index: number) =>
-    setTools(tools.filter((_, i) => i !== index));
-
-  const handleToolChange = (index: number, value: string) => {
-    const updated = [...tools];
-    updated[index] = value;
-    setTools(updated);
-  };
-
-  const uploadFile = async (file: File, bucket: string) => {
-    const cleanName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_");
-    const filePath = `${Date.now()}-${cleanName}`;
-
-    const { error } = await supabase.storage
-      .from(bucket)
-      .upload(filePath, file);
-
-    if (error) throw error;
-
-    const { data: publicUrl } = supabase.storage
-      .from(bucket)
-      .getPublicUrl(filePath);
-
-    return publicUrl.publicUrl;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -119,22 +81,12 @@ export default function ProjectsPage() {
     try {
       if (!title.trim()) throw new Error("Title is required");
       if (!description.trim()) throw new Error("Short description required");
-      if (!location.trim()) throw new Error("Location is required");
-      if (!application_type.trim())
-        throw new Error("Application type required");
-      if (!year) throw new Error("Year is required");
-      if (!logo) throw new Error("Logo is required");
+      if (!roles) throw new Error("Role/Roles required");
 
-      const logoUrl = await uploadFile(logo, "logo");
-
-      const { error: insertError } = await supabase.from("projects").insert({
+      const { error: insertError } = await supabase.from("services").insert({
         title,
         description,
-        location,
-        application_type,
-        year,
-        tools,
-        logo: logoUrl,
+        roles,
       });
 
       if (insertError) throw insertError;
@@ -143,14 +95,10 @@ export default function ProjectsPage() {
 
       setTitle("");
       setShortDescription("");
-      setLocation("");
-      setApplication_type("");
-      setYear("");
-      setTools([""]);
-      setLogo(null);
+      setRoles([]);
       setShowModal(false);
 
-      fetchProjects();
+      fetchServices();
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "An unknown error occurred";
@@ -166,16 +114,16 @@ export default function ProjectsPage() {
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Projects Management
+            Service Management
           </h1>
-          <p className="text-gray-600">Manage your portfolio projects</p>
+          <p className="text-gray-600">Manage your portfolio services</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">Total Projects</p>
+                <p className="text-sm text-gray-600 mb-1">Total Service</p>
                 <p className="text-3xl font-bold text-gray-900">
                   {rows.length}
                 </p>
@@ -239,17 +187,17 @@ export default function ProjectsPage() {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="p-6 border-b border-gray-100 flex justify-between items-center">
             <h2 className="text-xl font-semibold text-gray-900">
-              Project Records
+              Service Records
             </h2>
 
             <div className="flex gap-3">
               <button
-                onClick={fetchProjects}
+                onClick={fetchServices}
                 className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors flex items-center gap-2"
               >
                 <svg
@@ -273,7 +221,7 @@ export default function ProjectsPage() {
                 className="px-6 py-2 bg-[#C66140] hover:bg-[#b5563a] text-white rounded-lg transition-colors flex items-center gap-2 shadow-sm"
               >
                 <Plus className="w-5 h-5" />
-                Create Project
+                Create New Service
               </button>
             </div>
           </div>
@@ -286,16 +234,18 @@ export default function ProjectsPage() {
             ) : rows.length === 0 ? (
               <div className="text-center py-20">
                 <Layers className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500 text-lg mb-2">No projects found</p>
+                <p className="text-gray-500 text-lg mb-2">
+                  No Service(s) found
+                </p>
                 <p className="text-gray-400 text-sm mb-6">
-                  Get started by creating your first project
+                  Get started by creating your first service
                 </p>
                 <button
                   onClick={() => setShowModal(true)}
                   className="px-6 py-2 bg-[#C66140] hover:bg-[#b5563a] text-white rounded-lg transition-colors inline-flex items-center gap-2"
                 >
                   <Plus className="w-5 h-5" />
-                  Create Project
+                  Create Service(s)
                 </button>
               </div>
             ) : (
@@ -303,25 +253,13 @@ export default function ProjectsPage() {
                 <thead className="bg-gray-50 border-b border-gray-100">
                   <tr>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Logo
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Title
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Description
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Type
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Location
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Year
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Tools
+                      Role(s)
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Actions
@@ -335,92 +273,42 @@ export default function ProjectsPage() {
                       key={item.id}
                       className="hover:bg-gray-50 transition-colors"
                     >
-                      <td className="px-6 py-4">
-                        {item.logo ? (
-                          <Image
-                            src={item.logo}
-                            alt={item.title}
-                            width={50}
-                            height={50}
-                            className="rounded-lg object-cover cursor-pointer hover:opacity-80 transition-opacity"
-                            onClick={() => setSelectedLogo(item.logo)}
-                          />
-                        ) : (
-                          <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                            <Code className="w-6 h-6 text-gray-400" />
-                          </div>
-                        )}
-                      </td>
                       <td className="px-6 py-4 text-sm font-medium text-gray-900">
                         {item.title}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-600 max-w-xs truncate">
                         {item.description}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          {item.application_type}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-600 ">
-                        <div className="flex items-center gap-1">
-                          <MapPin className="w-4 h-4 text-gray-400" />
-                          {item.location}
-                        </div>
-                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600 max-w-xs truncate">
+                        {(() => {
+                          try {
+                            const roleList =
+                              typeof item.roles === "string"
+                                ? JSON.parse(item.roles)
+                                : item.roles;
 
-                      <td className="px-6 py-4 text-sm text-gray-600 ">
-                        <div className="flex items-center gap-1">
-                          <Calendar className="w-4 h-4 text-gray-400" />
-                          {item.year}
-                        </div>
-                      </td>
-
-                      <td className="px-6 py-4 text-sm text-gray-600">
-                        <div className="flex flex-wrap gap-1">
-                          {(() => {
-                            try {
-                              const toolsList =
-                                typeof item.tools === "string"
-                                  ? JSON.parse(item.tools)
-                                  : item.tools;
-                              return Array.isArray(toolsList)
-                                ? toolsList.slice(0, 3).map((tool, idx) => (
-                                    <span
-                                      key={idx}
-                                      className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800"
-                                    >
-                                      {tool}
-                                    </span>
-                                  ))
-                                : null;
-                            } catch {
+                            if (Array.isArray(roleList)) {
                               return (
-                                <span className="text-gray-400 text-xs">-</span>
+                                <ul className="space-y-1">
+                                  {roleList.map((role: string, idx: number) => (
+                                    <li
+                                      key={idx}
+                                      className="bg-gray-200  px-2 py-1 rounded text-sm"
+                                    >
+                                      {role}
+                                    </li>
+                                  ))}
+                                </ul>
                               );
                             }
-                          })()}
-                          {(() => {
-                            try {
-                              const toolsList =
-                                typeof item.tools === "string"
-                                  ? JSON.parse(item.tools)
-                                  : item.tools;
-                              if (
-                                Array.isArray(toolsList) &&
-                                toolsList.length > 3
-                              ) {
-                                return (
-                                  <span className="text-xs text-gray-400">
-                                    +{toolsList.length - 3}
-                                  </span>
-                                );
-                              }
-                            } catch {}
-                            return null;
-                          })()}
-                        </div>
+
+                            return item.roles;
+                          } catch {
+                            return item.roles;
+                          }
+                        })()}
                       </td>
+
                       <td className="px-6 py-4">
                         <button
                           className="text-red-600 hover:text-red-800 transition-colors p-2 hover:bg-red-50 rounded-lg"
@@ -437,27 +325,6 @@ export default function ProjectsPage() {
             )}
           </div>
         </div>
-
-        {selectedLogo && (
-          <div
-            className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4"
-            onClick={() => setSelectedLogo(null)}
-          >
-            <button
-              onClick={() => setSelectedLogo(null)}
-              className="absolute top-4 right-4 text-white hover:text-gray-300 bg-black/50 rounded-full p-2"
-            >
-              <X className="w-6 h-6" />
-            </button>
-            <Image
-              src={selectedLogo}
-              alt="Full size logo"
-              width={600}
-              height={600}
-              className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg"
-            />
-          </div>
-        )}
 
         {showModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
@@ -489,22 +356,9 @@ export default function ProjectsPage() {
                     <input
                       type="text"
                       className="w-full border border-gray-300 text-[#262624] rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
-                      placeholder="Enter project title"
+                      placeholder="Enter service title"
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Location *
-                    </label>
-                    <input
-                      type="text"
-                      className="w-full border border-gray-300 text-[#262624] rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
-                      placeholder="e.g. San Francisco, CA"
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
                     />
                   </div>
                 </div>
@@ -516,65 +370,29 @@ export default function ProjectsPage() {
                   <textarea
                     rows={4}
                     className="w-full border border-gray-300 text-[#262624] rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all resize-none"
-                    placeholder="Brief description of the project"
+                    placeholder="Brief description of the service"
                     value={description}
                     onChange={(e) => setShortDescription(e.target.value)}
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Application Type *
-                    </label>
-                    <input
-                      type="text"
-                      className="w-full border border-gray-300 text-[#262624] rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
-                      placeholder="e.g. Web App, Mobile App"
-                      value={application_type}
-                      onChange={(e) => setApplication_type(e.target.value)}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Year *
-                    </label>
-                    <select
-                      className="w-full border border-gray-300 text-[#262624] rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
-                      value={year}
-                      onChange={(e) => setYear(e.target.value)}
-                    >
-                      <option value="">Select year</option>
-                      {years.map((yr) => (
-                        <option key={yr} value={yr}>
-                          {yr}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Tools / Tech Stack *
-                  </label>
-                  {tools.map((tool, index) => (
+                <div className="">
+                  {roles.map((roleData, index) => (
                     <div key={index} className="flex gap-3 mb-3">
                       <input
                         type="text"
+                        value={roleData}
                         className="flex-1 border border-gray-300 text-[#262624] rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
-                        placeholder="e.g. React, Node.js, MongoDB"
-                        value={tool}
+                        placeholder="Enter Responsibilities"
                         onChange={(e) =>
-                          handleToolChange(index, e.target.value)
+                          handleRoleChange(index, e.target.value)
                         }
                       />
-                      {tools.length > 1 && (
+                      {roles.length > 1 && (
                         <button
                           type="button"
                           className="bg-red-100 text-red-600 hover:bg-red-200 p-3 rounded-lg transition-colors"
-                          onClick={() => removeTool(index)}
+                          onClick={() => removeRoleField(index)}
                         >
                           <X className="w-5 h-5" />
                         </button>
@@ -585,36 +403,11 @@ export default function ProjectsPage() {
                   <button
                     type="button"
                     className="text-[#C66140] hover:text-[#b5563a] font-medium text-sm flex items-center gap-2 mt-2"
-                    onClick={addToolField}
+                    onClick={addNewRoles}
                   >
                     <Plus className="w-4 h-4" />
-                    Add Another Tool
+                    Add Another Role
                   </button>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Project Logo *
-                  </label>
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#C66140] transition-colors">
-                    <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => setLogo(e.target.files?.[0] || null)}
-                      className="hidden"
-                      id="logo-upload"
-                    />
-                    <label htmlFor="logo-upload" className="cursor-pointer">
-                      <span className="text-[#C66140] hover:underline font-medium">
-                        Click to upload
-                      </span>
-                      <span className="text-gray-500"> or drag and drop</span>
-                    </label>
-                    {logo && (
-                      <p className="text-sm text-gray-600 mt-2">{logo.name}</p>
-                    )}
-                  </div>
                 </div>
 
                 <div className="flex gap-3 pt-4">
@@ -637,7 +430,7 @@ export default function ProjectsPage() {
                         Creating...
                       </span>
                     ) : (
-                      "Create Project"
+                      "Create Service(s)"
                     )}
                   </button>
                 </div>
