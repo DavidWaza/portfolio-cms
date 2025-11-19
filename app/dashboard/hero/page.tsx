@@ -59,7 +59,6 @@ export default function HeroPage() {
 
     setFetching(false);
   };
-
   useEffect(() => {
     fetchData();
   }, []);

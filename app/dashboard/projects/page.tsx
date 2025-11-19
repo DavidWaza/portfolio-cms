@@ -20,6 +20,7 @@ type ProjectProps = {
   title: string;
   description: string;
   location: string;
+  project_link: string;
   application_type: string;
   year: string;
   tools: string[];
@@ -30,6 +31,7 @@ export default function ProjectsPage() {
   const [title, setTitle] = useState("");
   const [description, setShortDescription] = useState("");
   const [location, setLocation] = useState("");
+  const [project_link, setProject_link] = useState("");
   const [application_type, setApplication_type] = useState("");
   const [year, setYear] = useState<string>("");
   const [tools, setTools] = useState<string[]>([""]);
@@ -123,6 +125,7 @@ export default function ProjectsPage() {
       if (!application_type.trim())
         throw new Error("Application type required");
       if (!year) throw new Error("Year is required");
+      if (!project_link) throw new Error("project link is required");
       if (!logo) throw new Error("Logo is required");
 
       const logoUrl = await uploadFile(logo, "logo");
@@ -134,6 +137,7 @@ export default function ProjectsPage() {
         application_type,
         year,
         tools,
+        project_link,
         logo: logoUrl,
       });
 
@@ -148,6 +152,7 @@ export default function ProjectsPage() {
       setYear("");
       setTools([""]);
       setLogo(null);
+      setProject_link("");
       setShowModal(false);
 
       fetchProjects();
@@ -309,6 +314,9 @@ export default function ProjectsPage() {
                       Title
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Link
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Description
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -354,11 +362,15 @@ export default function ProjectsPage() {
                       <td className="px-6 py-4 text-sm font-medium text-gray-900">
                         {item.title}
                       </td>
+                      <td className="px-6 py-4 text-sm max-w-xs truncate underline text-blue-700">
+                        {item.project_link}
+                      </td>
                       <td className="px-6 py-4 text-sm text-gray-600 max-w-xs truncate">
                         {item.description}
                       </td>
+
                       <td className="px-6 py-4 text-sm text-gray-600">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 whitespace-nowrap">
                           {item.application_type}
                         </span>
                       </td>
@@ -495,6 +507,21 @@ export default function ProjectsPage() {
                     />
                   </div>
 
+                  {/* Project Link */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Project Link *
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full border border-gray-300 text-[#262624] rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
+                      placeholder="Enter project title"
+                      value={project_link}
+                      onChange={(e) => setProject_link(e.target.value)}
+                    />
+                  </div>
+
+                  {/* Location */}
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                       Location *
