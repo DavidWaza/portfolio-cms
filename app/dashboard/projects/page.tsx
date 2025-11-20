@@ -6,11 +6,12 @@ import { getSupabase } from "@/config/supabaseClient";
 import { Plus, Layers } from "lucide-react";
 import { ProjectProps } from "@/lib/types";
 import StatsCards from "../components/StatsCard";
-import ProjectTable from "../components/ProjectTableProps";
 import LogoPreviewModal from "../components/LogoPreviewModal";
-import CreateProjectModal from "../components/CreateProjectModal";
-import ViewProjectModal from "../components/ViewProjectModal";
-import EditProjectModal from "../components/EditProjectModal";
+
+import EditProjectModal from "../components/ProjectComp/EditProjectModal";
+import CreateProjectModal from "../components/ProjectComp/CreateProjectModal";
+import ViewProjectModal from "../components/ProjectComp/ViewProjectModal";
+import ProjectTable from "../components/ProjectComp/ProjectTableProps";
 
 export default function ProjectsPage() {
   const [showModal, setShowModal] = useState(false);
@@ -139,7 +140,7 @@ export default function ProjectsPage() {
         <CreateProjectModal
           isOpen={showModal}
           onClose={() => setShowModal(false)}
-          onSuccess={fetchProjects} // call fetchProjects after create
+          onSuccess={fetchProjects} 
         />
 
         <ViewProjectModal
@@ -152,7 +153,7 @@ export default function ProjectsPage() {
           isOpen={showEditModal}
           project={selectedProject}
           onClose={() => setShowEditModal(false)}
-          onSuccess={fetchProjects} // call fetchProjects after edit
+          onSuccess={fetchProjects}
         />
       </div>
     </div>

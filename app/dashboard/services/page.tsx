@@ -5,14 +5,17 @@ import { toast } from "sonner";
 import { getSupabase } from "@/config/supabaseClient";
 import Image from "next/image";
 import { Plus, X, Trash2, Layers } from "lucide-react";
+// import ProjectTable from "../components/ProjectTableProps";
+import { ProjectProps, ServiceProps } from "@/lib/types";
+// import ServiceTable from "../components/ServiceTable";
+// import CreateProjectModal from "../components/CreateProjectModal";
+// import ViewProjectModal from "../components/ViewProjectModal";
+import EditProjectModal from "../components/ProjectComp/EditProjectModal";
+import ServiceTable from "../components/ServiceComp/ServiceTable";
+import ViewServiceModal from "../components/ServiceComp/ViewServiceModal";
+import EditServiceModal from "../components/ServiceComp/EditServiceModal";
+import CreateServiceModal from "../components/ServiceComp/CreateServiceModal";
 
-type ServiceProps = {
-  id: number;
-  title: string;
-  description: string;
-  roles: string;
-  created_at?: string;
-};
 export default function ServicePage() {
   const [title, setTitle] = useState("");
   const [description, setShortDescription] = useState("");
@@ -24,6 +27,12 @@ export default function ServicePage() {
 
   const [rows, setRows] = useState<ServiceProps[]>([]);
   const [fetching, setFetching] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<ServiceProps | null>(
+    null
+  );
+  const [selectedLogo, setSelectedLogo] = useState<string | null>(null);
 
   const supabase = getSupabase();
 
@@ -109,6 +118,16 @@ export default function ServicePage() {
     }
   };
 
+  const openEditModal = (service: ServiceProps) => {
+    setSelectedProject(service);
+    setShowEditModal(true);
+  };
+
+  const openViewModal = (service: ServiceProps) => {
+    setSelectedProject(service);
+    setShowViewModal(true);
+  };
+
   return (
     <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 p-6">
       <div className="max-w-7xl mx-auto">
@@ -118,76 +137,6 @@ export default function ServicePage() {
           </h1>
           <p className="text-gray-600">Manage your portfolio services</p>
         </div>
-
-        {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Total Service</p>
-                <p className="text-3xl font-bold text-gray-900">
-                  {rows.length}
-                </p>
-              </div>
-              <div className="bg-blue-100 p-3 rounded-lg">
-                <Layers className="w-6 h-6 text-blue-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Latest Year</p>
-                <p className="text-3xl font-bold text-gray-900">
-                  {rows.length > 0
-                    ? Math.max(...rows.map((r) => parseInt(r.year) || 0))
-                    : "-"}
-                </p>
-              </div>
-              <div className="bg-green-100 p-3 rounded-lg">
-                <Calendar className="w-6 h-6 text-green-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Technologies</p>
-                <p className="text-3xl font-bold text-gray-900">
-                  {rows.reduce((acc, row) => {
-                    try {
-                      const t =
-                        typeof row.tools === "string"
-                          ? JSON.parse(row.tools)
-                          : row.tools;
-                      return acc + (Array.isArray(t) ? t.length : 0);
-                    } catch {
-                      return acc;
-                    }
-                  }, 0)}
-                </p>
-              </div>
-              <div className="bg-purple-100 p-3 rounded-lg">
-                <Code className="w-6 h-6 text-purple-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Locations</p>
-                <p className="text-3xl font-bold text-gray-900">
-                  {new Set(rows.map((r) => r.location)).size}
-                </p>
-              </div>
-              <div className="bg-orange-100 p-3 rounded-lg">
-                <MapPin className="w-6 h-6 text-orange-600" />
-              </div>
-            </div>
-          </div>
-        </div> */}
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="p-6 border-b border-gray-100 flex justify-between items-center">
@@ -200,6 +149,7 @@ export default function ServicePage() {
                 onClick={fetchServices}
                 className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors flex items-center gap-2"
               >
+                {/* refresh icon */}
                 <svg
                   className="w-4 h-4"
                   fill="none"
@@ -220,8 +170,7 @@ export default function ServicePage() {
                 onClick={() => setShowModal(true)}
                 className="px-6 py-2 bg-[#C66140] hover:bg-[#b5563a] text-white rounded-lg transition-colors flex items-center gap-2 shadow-sm"
               >
-                <Plus className="w-5 h-5" />
-                Create New Service
+                <Plus className="w-5 h-5" /> Create Project
               </button>
             </div>
           </div>
@@ -234,210 +183,46 @@ export default function ServicePage() {
             ) : rows.length === 0 ? (
               <div className="text-center py-20">
                 <Layers className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500 text-lg mb-2">
-                  No Service(s) found
-                </p>
+                <p className="text-gray-500 text-lg mb-2">No projects found</p>
                 <p className="text-gray-400 text-sm mb-6">
-                  Get started by creating your first service
+                  Get started by creating your first project
                 </p>
                 <button
                   onClick={() => setShowModal(true)}
                   className="px-6 py-2 bg-[#C66140] hover:bg-[#b5563a] text-white rounded-lg transition-colors inline-flex items-center gap-2"
                 >
-                  <Plus className="w-5 h-5" />
-                  Create Service(s)
+                  <Plus className="w-5 h-5" /> Create Project
                 </button>
               </div>
             ) : (
-              <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-100">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Title
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Description
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Role(s)
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-
-                <tbody className="divide-y divide-gray-100">
-                  {rows.map((item) => (
-                    <tr
-                      key={item.id}
-                      className="hover:bg-gray-50 transition-colors"
-                    >
-                      <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                        {item.title}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-600 max-w-xs truncate">
-                        {item.description}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-600 max-w-xs truncate">
-                        {(() => {
-                          try {
-                            const roleList =
-                              typeof item.roles === "string"
-                                ? JSON.parse(item.roles)
-                                : item.roles;
-
-                            if (Array.isArray(roleList)) {
-                              return (
-                                <ul className="space-y-1">
-                                  {roleList.map((role: string, idx: number) => (
-                                    <li
-                                      key={idx}
-                                      className="bg-gray-200  px-2 py-1 rounded text-sm"
-                                    >
-                                      {role}
-                                    </li>
-                                  ))}
-                                </ul>
-                              );
-                            }
-
-                            return item.roles;
-                          } catch {
-                            return item.roles;
-                          }
-                        })()}
-                      </td>
-
-                      <td className="px-6 py-4">
-                        <button
-                          className="text-red-600 hover:text-red-800 transition-colors p-2 hover:bg-red-50 rounded-lg"
-                          onClick={() => deleteProject(item.id)}
-                          title="Delete"
-                        >
-                          <Trash2 className="w-5 h-5" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <ServiceTable
+                rows={rows}
+                onView={openViewModal}
+                onEdit={openEditModal}
+                onDelete={deleteProject}
+                onLogoClick={setSelectedLogo}
+              />
             )}
           </div>
         </div>
 
-        {showModal && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full my-8">
-              <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-gray-900">
-                  Create New Project
-                </h2>
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="text-gray-400 hover:text-gray-600 transition-colors"
-                >
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
+        <CreateServiceModal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          onSuccess={fetchServices}
+        />
+        <ViewServiceModal
+          isOpen={showViewModal}
+          data={selectedProject}
+          onClose={() => setShowViewModal(false)}
+        />
 
-              <div onSubmit={handleSubmit} className="p-6 space-y-6">
-                {error && (
-                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-                    {error}
-                  </div>
-                )}
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Project Title *
-                    </label>
-                    <input
-                      type="text"
-                      className="w-full border border-gray-300 text-[#262624] rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
-                      placeholder="Enter service title"
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Description *
-                  </label>
-                  <textarea
-                    rows={4}
-                    className="w-full border border-gray-300 text-[#262624] rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all resize-none"
-                    placeholder="Brief description of the service"
-                    value={description}
-                    onChange={(e) => setShortDescription(e.target.value)}
-                  />
-                </div>
-
-                <div className="">
-                  {roles.map((roleData, index) => (
-                    <div key={index} className="flex gap-3 mb-3">
-                      <input
-                        type="text"
-                        value={roleData}
-                        className="flex-1 border border-gray-300 text-[#262624] rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
-                        placeholder="Enter Responsibilities"
-                        onChange={(e) =>
-                          handleRoleChange(index, e.target.value)
-                        }
-                      />
-                      {roles.length > 1 && (
-                        <button
-                          type="button"
-                          className="bg-red-100 text-red-600 hover:bg-red-200 p-3 rounded-lg transition-colors"
-                          onClick={() => removeRoleField(index)}
-                        >
-                          <X className="w-5 h-5" />
-                        </button>
-                      )}
-                    </div>
-                  ))}
-
-                  <button
-                    type="button"
-                    className="text-[#C66140] hover:text-[#b5563a] font-medium text-sm flex items-center gap-2 mt-2"
-                    onClick={addNewRoles}
-                  >
-                    <Plus className="w-4 h-4" />
-                    Add Another Role
-                  </button>
-                </div>
-
-                <div className="flex gap-3 pt-4">
-                  <button
-                    type="button"
-                    onClick={() => setShowModal(false)}
-                    className="flex-1 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors font-medium"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleSubmit}
-                    className="flex-1 px-6 py-3 bg-[#C66140] hover:bg-[#b5563a] text-white rounded-lg transition-colors font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={loading}
-                  >
-                    {loading ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                        Creating...
-                      </span>
-                    ) : (
-                      "Create Service(s)"
-                    )}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        <EditServiceModal
+          isOpen={showEditModal}
+          services={selectedProject}
+          onClose={() => setShowEditModal(false)}
+          onSuccess={fetchServices}
+        />
       </div>
     </div>
   );

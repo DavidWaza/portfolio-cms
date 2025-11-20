@@ -10,3 +10,10 @@ export type ProjectProps = {
   logo: string;
   created_at?: string;
 };
+
+export type ServiceProps = {
+  id: number;
+  title:string;
+  description:string;
+  roles:string[];
+}

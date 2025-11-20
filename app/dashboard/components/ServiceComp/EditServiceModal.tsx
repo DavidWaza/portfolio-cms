@@ -2,87 +2,67 @@ import React, { useState, useEffect } from "react";
 import { X, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { getSupabase } from "@/config/supabaseClient";
-import { ProjectProps } from "@/lib/types";
+import { ServiceProps } from "@/lib/types";
 
 type EditProjectModalProps = {
   isOpen: boolean;
-  project: ProjectProps | null;
+  services: ServiceProps | null;
   onClose: () => void;
   onSuccess: () => void;
 };
 
 export default function EditProjectModal({
   isOpen,
-  project,
+  services,
   onClose,
   onSuccess,
 }: EditProjectModalProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [location, setLocation] = useState("");
-  const [projectLink, setProjectLink] = useState("");
-  const [applicationType, setApplicationType] = useState("");
-  const [year, setYear] = useState<string>("");
-  const [tools, setTools] = useState<string[]>([""]);
+  const [roles, setRoles] = useState<string[]>([""]);
   const [loading, setLoading] = useState(false);
 
   const supabase = getSupabase();
 
-  const years = Array.from(
-    { length: new Date().getFullYear() - 1970 + 1 },
-    (_, i) => 1970 + i
-  ).reverse();
+  const addToolField = () => setRoles([...roles, ""]);
 
-  useEffect(() => {
-    if (project) {
-      setTitle(project.title);
-      setDescription(project.description);
-      setLocation(project.location);
-      setApplicationType(project.application_type);
-      setYear(project.year);
-      setProjectLink(project.project_link);
-
-      try {
-        setTools(
-          typeof project.tools === "string"
-            ? JSON.parse(project.tools)
-            : project.tools
-        );
-      } catch {
-        setTools([""]);
-      }
-    }
-  }, [project]);
-
-  const addToolField = () => setTools([...tools, ""]);
-  
   const removeTool = (index: number) =>
-    setTools(tools.filter((_, i) => i !== index));
+    setRoles(roles.filter((_, i) => i !== index));
 
   const handleToolChange = (index: number, value: string) => {
-    const updated = [...tools];
+    const updated = [...roles];
     updated[index] = value;
-    setTools(updated);
+    setRoles(updated);
   };
 
-  const handleUpdate = async () => {
-    if (!project) return;
-    
-    setLoading(true);
+  useEffect(() => {
+    if (services) {
+      setTitle(services.title);
+      setDescription(services.description);
+    }
+    try {
+      setRoles(
+        typeof services?.roles === "string"
+          ? JSON.parse(services.roles)
+          : services?.roles
+      );
+    } catch {
+      setRoles([""]);
+    }
+  }, [services]);
 
+  const handleUpdate = async () => {
+    if (!services) return;
+    setLoading(true);
     try {
       const { error } = await supabase
-        .from("projects")
+        .from("services")
         .update({
           title,
           description,
-          location,
-          application_type: applicationType,
-          year,
-          project_link: projectLink,
-          tools,
+          roles,
         })
-        .eq("id", project.id);
+        .eq("id", services.id);
 
       if (error) throw error;
 
@@ -90,14 +70,14 @@ export default function EditProjectModal({
       onClose();
       onSuccess();
     } catch (err) {
-      toast.error("Failed to update project");
+      toast.error("Failed to update services");
       console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  if (!isOpen || !project) return null;
+  if (!isOpen || !services) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
@@ -116,57 +96,17 @@ export default function EditProjectModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Project Title *
+                Service Title *
               </label>
               <input
                 type="text"
                 className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-                placeholder="Enter project title"
+                placeholder="Enter services title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
               />
             </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Project Link *
-              </label>
-              <input
-                type="url"
-                className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-                placeholder="https://example.com"
-                value={projectLink}
-                onChange={(e) => setProjectLink(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Location *
-              </label>
-              <input
-                type="text"
-                className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-                placeholder="e.g. San Francisco, CA"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Application Type *
-              </label>
-              <input
-                type="text"
-                className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-                placeholder="e.g. Web App, Mobile App"
-                value={applicationType}
-                onChange={(e) => setApplicationType(e.target.value)}
-              />
-            </div>
           </div>
-
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Description *
@@ -174,44 +114,25 @@ export default function EditProjectModal({
             <textarea
               rows={4}
               className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all resize-none"
-              placeholder="Brief description of the project"
+              placeholder="Brief description of the services"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
-
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Year *
+              Roles *
             </label>
-            <select
-              className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-              value={year}
-              onChange={(e) => setYear(e.target.value)}
-            >
-              <option value="">Select year</option>
-              {years.map((yr) => (
-                <option key={yr} value={yr}>
-                  {yr}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Tools / Tech Stack *
-            </label>
-            {tools.map((tool, index) => (
+            {roles.map((role, index) => (
               <div key={index} className="flex gap-3 mb-3">
                 <input
                   type="text"
                   className="flex-1 border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                   placeholder="e.g. React, Node.js, MongoDB"
-                  value={tool}
+                  value={role}
                   onChange={(e) => handleToolChange(index, e.target.value)}
                 />
-                {tools.length > 1 && (
+                {roles.length > 1 && (
                   <button
                     type="button"
                     className="bg-red-100 text-red-600 hover:bg-red-200 p-3 rounded-lg transition-colors"
@@ -243,7 +164,7 @@ export default function EditProjectModal({
             <button
               type="button"
               onClick={handleUpdate}
-              className="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-6 py-3 bg-[#C66140] hover:bg-green-700 text-white rounded-lg transition-colors font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading}
             >
               {loading ? (
