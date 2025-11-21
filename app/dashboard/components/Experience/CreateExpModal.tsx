@@ -62,19 +62,21 @@ export default function CreateExpModal({
       if (!job_type.trim()) throw new Error("Project link is required");
       if (!job_responsibility) throw new Error("Logo is required");
 
-      const { error: insertError } = await supabase.from("projects").insert({
-        title_role,
-        company,
-        location,
-        date_started,
-        date_ended,
-        job_type,
-        job_responsibility,
-      });
+      const { error: insertError } = await supabase
+        .from("work_experiences")
+        .insert({
+          title_role,
+          company,
+          location,
+          date_started,
+          date_ended,
+          job_type,
+          job_responsibility,
+        });
 
       if (insertError) throw insertError;
 
-      toast.success("Project created successfully!");
+      toast.success("Experience created successfully!");
       resetForm();
       onClose();
       onSuccess();
@@ -135,25 +137,11 @@ export default function CreateExpModal({
                 <input
                   type="url"
                   className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
-                  placeholder="Senior Software Developer"
+                  placeholder="Ex. Meta"
                   value={company}
                   onChange={(e) => setCompany(e.target.value)}
                 />
               </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Location *
-                </label>
-                <input
-                  type="text"
-                  className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
-                  placeholder="e.g. San Francisco, CA"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                />
-              </div>
-
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Start Date *
@@ -161,23 +149,34 @@ export default function CreateExpModal({
                 <input
                   type="text"
                   className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
-                  placeholder="e.g. Web App, Mobile App"
+                  placeholder="Ex. Mar, 2000"
                   value={date_started}
                   onChange={(e) => setDate_started(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  End Date *
+                </label>
+                <input
+                  className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all resize-none"
+                  placeholder="Ex. Mar, 2002"
+                  value={date_ended}
+                  onChange={(e) => setDate_ended(e.target.value)}
                 />
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                End Date *
+                Location *
               </label>
-              <textarea
-                rows={4}
-                className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all resize-none"
-                placeholder="Brief company of the project"
-                value={date_ended}
-                onChange={(e) => setDate_ended(e.target.value)}
+              <input
+                type="text"
+                className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
+                placeholder="e.g. San Francisco, CA"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
               />
             </div>
 
@@ -186,10 +185,9 @@ export default function CreateExpModal({
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Job Type *
               </label>
-              <textarea
-                rows={4}
+              <input
                 className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all resize-none"
-                placeholder="Brief company of the project"
+                placeholder="Ex. Remote"
                 value={job_type}
                 onChange={(e) => setJob_type(e.target.value)}
               />
@@ -204,7 +202,7 @@ export default function CreateExpModal({
                   <input
                     type="text"
                     className="flex-1 border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
-                    placeholder="e.g. React, Node.js, MongoDB"
+                    placeholder="Ex. I handled the api integration with axios"
                     value={des}
                     onChange={(e) => handleToolChange(index, e.target.value)}
                   />
@@ -225,7 +223,7 @@ export default function CreateExpModal({
                 onClick={addToolField}
               >
                 <Plus className="w-4 h-4" />
-                Add Another Tool
+                Add Another Responsibility
               </button>
             </div>
           </form>
@@ -242,6 +240,7 @@ export default function CreateExpModal({
           </button>
           <button
             type="submit"
+            onClick={handleSubmit}
             className="flex-1 px-6 py-3 bg-[#C66140] hover:bg-[#b5563a] text-white rounded-lg transition-colors font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={loading}
           >
@@ -251,7 +250,7 @@ export default function CreateExpModal({
                 Creating...
               </span>
             ) : (
-              "Create Project"
+              "Create Experience"
             )}
           </button>
         </div>

@@ -67,7 +67,7 @@ export default function EditExpModal({
 
     try {
       const { error } = await supabase
-        .from("projects")
+        .from("work_experiences")
         .update({
           title_role,
           company,
@@ -80,7 +80,7 @@ export default function EditExpModal({
 
       if (error) throw error;
 
-      toast.success("Project updated successfully!");
+      toast.success("Work experience updated successfully!");
       onClose();
       onSuccess();
     } catch (err) {
@@ -158,7 +158,7 @@ export default function EditExpModal({
                   className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                   placeholder="e.g. Web App, Mobile App"
                   value={date_started}
-                  onChange={(e) => setDate_ended(e.target.value)}
+                  onChange={(e) => setDate_started(e.target.value)}
                 />
               </div>
             </div>

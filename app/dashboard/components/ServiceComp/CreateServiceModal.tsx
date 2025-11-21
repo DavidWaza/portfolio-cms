@@ -57,7 +57,7 @@ export default function CreateServiceModal({
 
       if (insertError) throw insertError;
 
-      toast.success("Project created successfully!");
+      toast.success("Services created successfully!");
       resetForm();
       onClose();
       onSuccess();
@@ -78,7 +78,7 @@ export default function CreateServiceModal({
       <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col">
         <div className="p-6 border-b border-gray-100 flex justify-between items-center shrink-0">
           <h2 className="text-2xl font-bold text-gray-900">
-            Create New Project
+            Create New Service
           </h2>
           <button className="text-gray-400 hover:text-gray-600 transition-colors">
             <X className="w-6 h-6" onClick={onClose} />
@@ -150,7 +150,7 @@ export default function CreateServiceModal({
                 onClick={addToolField}
               >
                 <Plus className="w-4 h-4" />
-                Add Another Role
+                Add Another Service
               </button>
             </div>
           </form>
