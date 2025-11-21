@@ -25,7 +25,6 @@ type HeroRow = {
   created_at?: string;
 };
 
-
 export default function HeroPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -473,9 +472,10 @@ export default function HeroPage() {
 
         {/* Create Hero Modal */}
         {showModal && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full my-8">
-              <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col">
+              {/* Fixed Header */}
+              <div className="p-6 border-b border-gray-100 flex justify-between items-center shrink-0">
                 <h2 className="text-2xl font-bold text-gray-900">
                   Create New Hero
                 </h2>
@@ -487,159 +487,168 @@ export default function HeroPage() {
                 </button>
               </div>
 
-              <form onSubmit={handleSubmit} className="p-6 space-y-6">
-                {error && (
-                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-                    {error}
+              {/* Scrollable Content */}
+              <div className="flex-1 overflow-y-auto p-6">
+                <form
+                  id="hero-form"
+                  onSubmit={handleSubmit}
+                  className="space-y-6"
+                >
+                  {error && (
+                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                      {error}
+                    </div>
+                  )}
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Title *
+                    </label>
+                    <input
+                      className="w-full border border-gray-300 text-[#262624] rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
+                      placeholder="Enter hero title"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                    />
                   </div>
-                )}
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Title *
-                  </label>
-                  <input
-                    className="w-full border border-gray-300 text-[#262624] rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
-                    placeholder="Enter hero title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                  />
-                </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Description *
+                    </label>
+                    <textarea
+                      className="w-full border border-gray-300 text-[#262624] rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all resize-none"
+                      rows={4}
+                      placeholder="Enter hero description"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                    />
+                  </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Description *
-                  </label>
-                  <textarea
-                    className="w-full border border-gray-300 text-[#262624] rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all resize-none"
-                    rows={4}
-                    placeholder="Enter hero description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                  />
-                </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Phone Numbers *
+                    </label>
+                    {phones.map((phone, index) => (
+                      <div key={index} className="flex gap-3 mb-3">
+                        <input
+                          type="text"
+                          value={phone}
+                          className="flex-1 border border-gray-300 text-[#262624] rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
+                          placeholder="Enter 11-digit phone number"
+                          onChange={(e) =>
+                            handlePhoneChange(
+                              index,
+                              e.target.value.replace(/\D/g, "")
+                            )
+                          }
+                        />
+                        {phones.length > 1 && (
+                          <button
+                            type="button"
+                            className="bg-red-100 text-red-600 hover:bg-red-200 p-3 rounded-lg transition-colors"
+                            onClick={() => removePhoneField(index)}
+                          >
+                            <X className="w-5 h-5" />
+                          </button>
+                        )}
+                      </div>
+                    ))}
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Phone Numbers *
-                  </label>
-                  {phones.map((phone, index) => (
-                    <div key={index} className="flex gap-3 mb-3">
+                    <button
+                      type="button"
+                      className="text-[#C66140] hover:text-[#b5563a] font-medium text-sm flex items-center gap-2 mt-2"
+                      onClick={addPhoneField}
+                    >
+                      <Plus className="w-4 h-4" />
+                      Add Another Phone
+                    </button>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Images
+                    </label>
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#C66140] transition-colors">
+                      <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
                       <input
-                        type="text"
-                        value={phone}
-                        className="flex-1 border border-gray-300 text-[#262624] rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
-                        placeholder="Enter 11-digit phone number"
+                        type="file"
+                        multiple
+                        accept="image/*"
                         onChange={(e) =>
-                          handlePhoneChange(
-                            index,
-                            e.target.value.replace(/\D/g, "")
-                          )
+                          setImages(Array.from(e.target.files || []))
                         }
+                        className="hidden"
+                        id="image-upload"
                       />
-                      {phones.length > 1 && (
-                        <button
-                          type="button"
-                          className="bg-red-100 text-red-600 hover:bg-red-200 p-3 rounded-lg transition-colors"
-                          onClick={() => removePhoneField(index)}
-                        >
-                          <X className="w-5 h-5" />
-                        </button>
+                      <label htmlFor="image-upload" className="cursor-pointer">
+                        <span className="text-[#C66140] hover:underline font-medium">
+                          Click to upload
+                        </span>
+                        <span className="text-gray-500"> or drag and drop</span>
+                      </label>
+                      {images.length > 0 && (
+                        <p className="text-sm text-gray-600 mt-2">
+                          {images.length} file(s) selected
+                        </p>
                       )}
                     </div>
-                  ))}
-
-                  <button
-                    type="button"
-                    className="text-[#C66140] hover:text-[#b5563a] font-medium text-sm flex items-center gap-2 mt-2"
-                    onClick={addPhoneField}
-                  >
-                    <Plus className="w-4 h-4" />
-                    Add Another Phone
-                  </button>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Images
-                  </label>
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#C66140] transition-colors">
-                    <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                    <input
-                      type="file"
-                      multiple
-                      accept="image/*"
-                      onChange={(e) =>
-                        setImages(Array.from(e.target.files || []))
-                      }
-                      className="hidden"
-                      id="image-upload"
-                    />
-                    <label htmlFor="image-upload" className="cursor-pointer">
-                      <span className="text-[#C66140] hover:underline font-medium">
-                        Click to upload
-                      </span>
-                      <span className="text-gray-500"> or drag and drop</span>
-                    </label>
-                    {images.length > 0 && (
-                      <p className="text-sm text-gray-600 mt-2">
-                        {images.length} file(s) selected
-                      </p>
-                    )}
                   </div>
-                </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Resume (PDF)
-                  </label>
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#C66140] transition-colors">
-                    <FileText className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                    <input
-                      type="file"
-                      accept=".pdf"
-                      onChange={(e) => setResume(e.target.files?.[0] || null)}
-                      className="hidden"
-                      id="resume-upload"
-                    />
-                    <label htmlFor="resume-upload" className="cursor-pointer">
-                      <span className="text-[#C66140] hover:underline font-medium">
-                        Click to upload
-                      </span>
-                      <span className="text-gray-500"> or drag and drop</span>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Resume (PDF)
                     </label>
-                    {resume && (
-                      <p className="text-sm text-gray-600 mt-2">
-                        {resume.name}
-                      </p>
-                    )}
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#C66140] transition-colors">
+                      <FileText className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                      <input
+                        type="file"
+                        accept=".pdf"
+                        onChange={(e) => setResume(e.target.files?.[0] || null)}
+                        className="hidden"
+                        id="resume-upload"
+                      />
+                      <label htmlFor="resume-upload" className="cursor-pointer">
+                        <span className="text-[#C66140] hover:underline font-medium">
+                          Click to upload
+                        </span>
+                        <span className="text-gray-500"> or drag and drop</span>
+                      </label>
+                      {resume && (
+                        <p className="text-sm text-gray-600 mt-2">
+                          {resume.name}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                </div>
+                </form>
+              </div>
 
-                <div className="flex gap-3 pt-4">
-                  <button
-                    type="button"
-                    onClick={() => setShowModal(false)}
-                    className="flex-1 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors font-medium"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex-1 px-6 py-3 bg-[#C66140] hover:bg-[#b5563a] text-white rounded-lg transition-colors font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={loading}
-                  >
-                    {loading ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                        Creating...
-                      </span>
-                    ) : (
-                      "Create Hero"
-                    )}
-                  </button>
-                </div>
-              </form>
+              {/* Fixed Footer */}
+              <div className="p-6 border-t border-gray-100 flex gap-3 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="flex-1 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  form="hero-form"
+                  className="flex-1 px-6 py-3 bg-[#C66140] hover:bg-[#b5563a] text-white rounded-lg transition-colors font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                      Creating...
+                    </span>
+                  ) : (
+                    "Create Hero"
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         )}

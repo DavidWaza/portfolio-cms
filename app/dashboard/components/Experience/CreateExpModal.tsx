@@ -3,72 +3,48 @@ import { X, Plus, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { getSupabase } from "@/config/supabaseClient";
 
-type CreateProjectModalProps = {
+type CreateExpModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
 };
 
-export default function CreateProjectModal({
+export default function CreateExpModal({
   isOpen,
   onClose,
   onSuccess,
-}: CreateProjectModalProps) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+}: CreateExpModalProps) {
+  const [title_role, setTitle_role] = useState("");
+  const [company, setCompany] = useState("");
   const [location, setLocation] = useState("");
-  const [projectLink, setProjectLink] = useState("");
-  const [applicationType, setApplicationType] = useState("");
-  const [year, setYear] = useState<string>("");
-  const [tools, setTools] = useState<string[]>([""]);
-  const [logo, setLogo] = useState<File | null>(null);
+  const [date_started, setDate_started] = useState("");
+  const [date_ended, setDate_ended] = useState("");
+  const [job_type, setJob_type] = useState("");
+  const [job_responsibility, setJob_responsibility] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const supabase = getSupabase();
 
-  const years = Array.from(
-    { length: new Date().getFullYear() - 1970 + 1 },
-    (_, i) => 1970 + i
-  ).reverse();
-
-  const addToolField = () => setTools([...tools, ""]);
+  const addToolField = () => setJob_responsibility([...job_responsibility, ""]);
 
   const removeTool = (index: number) =>
-    setTools(tools.filter((_, i) => i !== index));
+    setJob_responsibility(job_responsibility.filter((_, i) => i !== index));
 
   const handleToolChange = (index: number, value: string) => {
-    const updated = [...tools];
+    const updated = [...job_responsibility];
     updated[index] = value;
-    setTools(updated);
-  };
-
-  const uploadFile = async (file: File, bucket: string) => {
-    const cleanName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_");
-    const filePath = `${Date.now()}-${cleanName}`;
-
-    const { error } = await supabase.storage
-      .from(bucket)
-      .upload(filePath, file);
-
-    if (error) throw error;
-
-    const { data: publicUrl } = supabase.storage
-      .from(bucket)
-      .getPublicUrl(filePath);
-
-    return publicUrl.publicUrl;
+    setJob_responsibility(updated);
   };
 
   const resetForm = () => {
-    setTitle("");
-    setDescription("");
+    setTitle_role("");
+    setDate_started("");
+    setJob_type("");
+    setJob_responsibility([]);
+    setDate_ended("");
+    setCompany("");
     setLocation("");
-    setApplicationType("");
-    setYear("");
-    setTools([""]);
-    setLogo(null);
-    setProjectLink("");
     setError("");
   };
 
@@ -78,26 +54,22 @@ export default function CreateProjectModal({
     setLoading(true);
 
     try {
-      if (!title.trim()) throw new Error("Title is required");
-      if (!description.trim()) throw new Error("Description is required");
+      if (!title_role.trim()) throw new Error("Title is required");
+      if (!company.trim()) throw new Error("Description is required");
       if (!location.trim()) throw new Error("Location is required");
-      if (!applicationType.trim())
-        throw new Error("Application type is required");
-      if (!year) throw new Error("Year is required");
-      if (!projectLink.trim()) throw new Error("Project link is required");
-      if (!logo) throw new Error("Logo is required");
-
-      const logoUrl = await uploadFile(logo, "logo");
+      if (!date_started.trim()) throw new Error("Application type is required");
+      if (!date_ended) throw new Error("Year is required");
+      if (!job_type.trim()) throw new Error("Project link is required");
+      if (!job_responsibility) throw new Error("Logo is required");
 
       const { error: insertError } = await supabase.from("projects").insert({
-        title,
-        description,
+        title_role,
+        company,
         location,
-        application_type: applicationType,
-        year,
-        tools,
-        project_link: projectLink,
-        logo: logoUrl,
+        date_started,
+        date_ended,
+        job_type,
+        job_responsibility,
       });
 
       if (insertError) throw insertError;
@@ -123,7 +95,7 @@ export default function CreateProjectModal({
       <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col">
         <div className="p-6 border-b border-gray-100 flex justify-between items-center shrink-0">
           <h2 className="text-2xl font-bold text-gray-900">
-            Create New Project
+            Create New Work Experience
           </h2>
           <button
             onClick={onClose}
@@ -133,7 +105,7 @@ export default function CreateProjectModal({
           </button>
         </div>
 
-        {/* Scrollable Content */}
+        {/* Scrollable comp */}
         <div className="flex-1 overflow-y-auto p-6">
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
             {error && (
@@ -145,27 +117,27 @@ export default function CreateProjectModal({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Project Title *
+                  Role Title *
                 </label>
                 <input
                   type="text"
                   className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
                   placeholder="Enter project title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  value={title_role}
+                  onChange={(e) => setTitle_role(e.target.value)}
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Project Link *
+                  Company *
                 </label>
                 <input
                   type="url"
                   className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
-                  placeholder="https://example.com"
-                  value={projectLink}
-                  onChange={(e) => setProjectLink(e.target.value)}
+                  placeholder="Senior Software Developer"
+                  value={company}
+                  onChange={(e) => setCompany(e.target.value)}
                 />
               </div>
 
@@ -184,63 +156,59 @@ export default function CreateProjectModal({
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Application Type *
+                  Start Date *
                 </label>
                 <input
                   type="text"
                   className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
                   placeholder="e.g. Web App, Mobile App"
-                  value={applicationType}
-                  onChange={(e) => setApplicationType(e.target.value)}
+                  value={date_started}
+                  onChange={(e) => setDate_started(e.target.value)}
                 />
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Description *
+                End Date *
               </label>
               <textarea
                 rows={4}
                 className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all resize-none"
-                placeholder="Brief description of the project"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Brief company of the project"
+                value={date_ended}
+                onChange={(e) => setDate_ended(e.target.value)}
+              />
+            </div>
+
+            {/* End Date */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Job Type *
+              </label>
+              <textarea
+                rows={4}
+                className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all resize-none"
+                placeholder="Brief company of the project"
+                value={job_type}
+                onChange={(e) => setJob_type(e.target.value)}
               />
             </div>
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Year *
+                Job Descriptions *
               </label>
-              <select
-                className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
-                value={year}
-                onChange={(e) => setYear(e.target.value)}
-              >
-                <option value="">Select year</option>
-                {years.map((yr) => (
-                  <option key={yr} value={yr}>
-                    {yr}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Tools / Tech Stack *
-              </label>
-              {tools.map((tool, index) => (
+              {job_responsibility.map((des, index) => (
                 <div key={index} className="flex gap-3 mb-3">
                   <input
                     type="text"
                     className="flex-1 border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
                     placeholder="e.g. React, Node.js, MongoDB"
-                    value={tool}
+                    value={des}
                     onChange={(e) => handleToolChange(index, e.target.value)}
                   />
-                  {tools.length > 1 && (
+                  {job_responsibility.length > 1 && (
                     <button
                       type="button"
                       className="bg-red-100 text-red-600 hover:bg-red-200 p-3 rounded-lg transition-colors"
@@ -260,33 +228,10 @@ export default function CreateProjectModal({
                 Add Another Tool
               </button>
             </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Project Logo *
-              </label>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#C66140] transition-colors">
-                <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setLogo(e.target.files?.[0] || null)}
-                  className="hidden"
-                  id="logo-upload"
-                />
-                <label htmlFor="logo-upload" className="cursor-pointer">
-                  <span className="text-[#C66140] hover:underline font-medium">
-                    Click to upload
-                  </span>
-                  <span className="text-gray-500"> or drag and drop</span>
-                </label>
-                {logo && (
-                  <p className="text-sm text-gray-600 mt-2">{logo.name}</p>
-                )}
-              </div>
-            </div>
           </form>
         </div>
+
+        {/* Fixed button */}
         <div className="p-6 border-t border-gray-100 flex gap-3 shrink-0">
           <button
             type="button"

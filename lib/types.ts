@@ -17,3 +17,15 @@ export type ServiceProps = {
   description:string;
   roles:string[];
 }
+
+export type WorkExpProps = {
+  id: number;
+  title_role: string;
+  company: string;
+  date_started: string;
+  date_ended: string;
+  location: string;
+  job_type: string;
+  job_responsibility: string[];
+  created_at?: string;
+}

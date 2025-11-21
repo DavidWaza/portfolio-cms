@@ -1,16 +1,9 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { getSupabase } from "@/config/supabaseClient";
-import Image from "next/image";
-import { Plus, X, Trash2, Layers } from "lucide-react";
-// import ProjectTable from "../components/ProjectTableProps";
-import { ProjectProps, ServiceProps } from "@/lib/types";
-// import ServiceTable from "../components/ServiceTable";
-// import CreateProjectModal from "../components/CreateProjectModal";
-// import ViewProjectModal from "../components/ViewProjectModal";
-import EditProjectModal from "../components/ProjectComp/EditProjectModal";
+import { Plus, Layers } from "lucide-react";
+import {  ServiceProps } from "@/lib/types";
 import ServiceTable from "../components/ServiceComp/ServiceTable";
 import ViewServiceModal from "../components/ServiceComp/ViewServiceModal";
 import EditServiceModal from "../components/ServiceComp/EditServiceModal";
@@ -21,8 +14,8 @@ export default function ServicePage() {
   const [description, setShortDescription] = useState("");
   const [roles, setRoles] = useState([""]);
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [, setLoading] = useState(false);
+  const [, setError] = useState("");
   const [showModal, setShowModal] = useState(false);
 
   const [rows, setRows] = useState<ServiceProps[]>([]);
@@ -32,21 +25,10 @@ export default function ServicePage() {
   const [selectedProject, setSelectedProject] = useState<ServiceProps | null>(
     null
   );
-  const [selectedLogo, setSelectedLogo] = useState<string | null>(null);
+  const [, setSelectedLogo] = useState<string | null>(null);
 
   const supabase = getSupabase();
 
-  // Add new roless
-  const addNewRoles = () => setRoles([...roles, ""]);
-  const removeRoleField = (index: number) =>
-    setRoles(roles.filter((_, i) => i !== index));
-
-  // Handle roles value
-  const handleRoleChange = (index: number, value: string) => {
-    const updated = [...roles];
-    updated[index] = value;
-    setRoles(updated);
-  };
   const fetchServices = async () => {
     setFetching(true);
     const { data, error } = await supabase
@@ -170,7 +152,7 @@ export default function ServicePage() {
                 onClick={() => setShowModal(true)}
                 className="px-6 py-2 bg-[#C66140] hover:bg-[#b5563a] text-white rounded-lg transition-colors flex items-center gap-2 shadow-sm"
               >
-                <Plus className="w-5 h-5" /> Create Project
+                <Plus className="w-5 h-5" /> Create Service(s)
               </button>
             </div>
           </div>
