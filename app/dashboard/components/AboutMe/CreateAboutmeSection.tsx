@@ -1,42 +1,30 @@
 import React, { useState } from "react";
-import { X, Plus } from "lucide-react";
+import { X } from "lucide-react";
 import { toast } from "sonner";
 import { getSupabase } from "@/config/supabaseClient";
 
-type CreateProjectModalProps = {
+type CreateExpModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
 };
 
-export default function CreateServiceModal({
+export default function CreateEditAboutmeSection({
   isOpen,
   onClose,
   onSuccess,
-}: CreateProjectModalProps) {
+}: CreateExpModalProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [roles, setRoles] = useState([""]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const supabase = getSupabase();
 
-  const addToolField = () => setRoles([...roles, ""]);
-
-  const removeTool = (index: number) =>
-    setRoles(roles.filter((_, i) => i !== index));
-
-  const handleRoleChange = (index: number, value: string) => {
-    const updated = [...roles];
-    updated[index] = value;
-    setRoles(updated);
-  };
-
   const resetForm = () => {
     setTitle("");
     setDescription("");
-    setRoles([]);
+    setError("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -47,17 +35,14 @@ export default function CreateServiceModal({
     try {
       if (!title.trim()) throw new Error("Title is required");
       if (!description.trim()) throw new Error("Description is required");
-      if (!roles) throw new Error("Roles is required");
-
-      const { error: insertError } = await supabase.from("services").insert({
+      const { error: insertError } = await supabase.from("about_me").insert({
         title,
         description,
-        roles,
       });
 
       if (insertError) throw insertError;
 
-      toast.success("Services created successfully!");
+      toast.success("About me created successfully!");
       resetForm();
       onClose();
       onSuccess();
@@ -78,14 +63,17 @@ export default function CreateServiceModal({
       <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col">
         <div className="p-6 border-b border-gray-100 flex justify-between items-center shrink-0">
           <h2 className="text-2xl font-bold text-gray-900">
-            Create New Service
+            Create New Testimonial
           </h2>
-          <button className="text-gray-400 hover:text-gray-600 transition-colors">
-            <X className="w-6 h-6" onClick={onClose} />
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            <X className="w-6 h-6" />
           </button>
         </div>
 
-        {/* Scrollable Content */}
+        {/* Scrollable comp */}
         <div className="flex-1 overflow-y-auto p-6">
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
             {error && (
@@ -94,68 +82,36 @@ export default function CreateServiceModal({
               </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ">
+            <div className="grid grid-cols-1 gap-6">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Service Title *
+                  Title *
                 </label>
                 <input
                   type="text"
-                  className="w-full border border-gray-300 text-[#262624] rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent transition-all"
-                  placeholder="Enter service title"
+                  className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent transition-all"
+                  placeholder="Enter project title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                 />
               </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Description *
-              </label>
-              <textarea
-                rows={4}
-                className="w-full border border-gray-300 text-[#262624] rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent transition-all resize-none"
-                placeholder="Brief description of the service"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
-            </div>
-
-            <div className="">
-              {roles.map((roleData, index) => (
-                <div key={index} className="flex gap-3 mb-3">
-                  <input
-                    type="text"
-                    value={roleData}
-                    className="flex-1 border border-gray-300 text-[#262624] rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent transition-all"
-                    placeholder="Enter Responsibilities"
-                    onChange={(e) => handleRoleChange(index, e.target.value)}
-                  />
-                  {roles.length > 1 && (
-                    <button
-                      type="button"
-                      className="bg-red-100 text-red-600 hover:bg-red-200 p-3 rounded-lg transition-colors"
-                      onClick={() => removeTool(index)}
-                    >
-                      <X className="w-5 h-5" />
-                    </button>
-                  )}
-                </div>
-              ))}
-
-              <button
-                type="button"
-                className="text-[#8B5CF6] hover:text-[#8B5CF6] font-medium text-sm flex items-center gap-2 mt-2"
-                onClick={addToolField}
-              >
-                <Plus className="w-4 h-4" />
-                Add Another Service
-              </button>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Description *
+                </label>
+                <textarea
+                  rows={4}
+                  className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent transition-all truncate"
+                  placeholder="Type a description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+              </div>
             </div>
           </form>
         </div>
 
+        {/* Fixed button */}
         <div className="p-6 border-t border-gray-100 flex gap-3 shrink-0">
           <button
             type="button"
@@ -165,7 +121,7 @@ export default function CreateServiceModal({
             Cancel
           </button>
           <button
-            type="button"
+            type="submit"
             onClick={handleSubmit}
             className="flex-1 px-6 py-3 bg-[#8B5CF6] hover:bg-[#8B5CF6] text-white rounded-lg transition-colors font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={loading}
@@ -176,7 +132,7 @@ export default function CreateServiceModal({
                 Creating...
               </span>
             ) : (
-              "Create Service(s)"
+              "Create About Me"
             )}
           </button>
         </div>

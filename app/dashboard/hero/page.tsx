@@ -17,21 +17,17 @@ import {
 
 type HeroRow = {
   id: number;
-  title: string;
-  description: string;
+  super_text: string;
+  sub_text: string;
   phones: string[];
-  images: string[];
-  resumes: string | null;
+  debs_hero: string[];
   created_at?: string;
 };
 
 export default function HeroPage() {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [phones, setPhones] = useState([""]);
-  const [images, setImages] = useState<File[]>([]);
-  const [resume, setResume] = useState<File | null>(null);
-
+  const [super_text, setSuper_text] = useState("");
+  const [sub_text, setSub_text] = useState("");
+  const [debs_hero, setDebs_hero] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -41,14 +37,13 @@ export default function HeroPage() {
   const [fetching, setFetching] = useState(false);
 
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [selectedResume, setSelectedResume] = useState<string | null>(null);
 
   const supabase = getSupabase();
 
   // Fetch hero from supabase
   const fetchData = async () => {
     setFetching(true);
-    const { data, error } = await supabase.from("hero").select("*");
+    const { data, error } = await supabase.from("hero_info").select("*");
 
     if (error) {
       toast.error("Failed to fetch data");
@@ -69,7 +64,7 @@ export default function HeroPage() {
     );
     if (!confirmed) return;
 
-    const { error } = await supabase.from("hero").delete().eq("id", id);
+    const { error } = await supabase.from("hero_info").delete().eq("id", id);
 
     if (error) {
       toast.error("Failed to delete record");
@@ -78,17 +73,6 @@ export default function HeroPage() {
       fetchData();
     }
   };
-
-  const handlePhoneChange = (index: number, value: string) => {
-    if (value.length > 11) return;
-    const newPhones = [...phones];
-    newPhones[index] = value;
-    setPhones(newPhones);
-  };
-
-  const addPhoneField = () => setPhones([...phones, ""]);
-  const removePhoneField = (index: number) =>
-    setPhones(phones.filter((_, i) => i !== index));
 
   // upload helper
   const uploadFile = async (file: File, bucket: string): Promise<string> => {
@@ -115,43 +99,30 @@ export default function HeroPage() {
     setLoading(true);
 
     try {
-      if (!title.trim()) throw new Error("Title is required");
-      if (!description.trim()) throw new Error("Description is required");
+      if (!super_text.trim()) throw new Error("Title is required");
+      if (!sub_text.trim()) throw new Error("Description is required");
 
-      phones.forEach((p) => {
-        if (p.length !== 11)
-          throw new Error("Each phone number must be 11 digits");
-      });
-
-      // Upload images
+      // Upload hero_image
       const imageUrls: string[] = [];
-      for (const img of images) {
-        const url = await uploadFile(img, "images");
+      for (const img of debs_hero) {
+        const url = await uploadFile(img, "debs_hero");
         imageUrls.push(url);
       }
 
-      // Upload resume
-      let resumeUrl: string | null = null;
-      if (resume) resumeUrl = await uploadFile(resume, "resumes");
-
       // Insert data
-      const { error: insertError } = await supabase.from("hero").insert({
-        title,
-        description,
-        phones,
-        images: imageUrls,
-        resumes: resumeUrl,
+      const { error: insertError } = await supabase.from("hero_info").insert({
+        super_text,
+        sub_text,
+        debs_hero: imageUrls,
       });
 
       if (insertError) throw insertError;
 
       toast.success("Hero created successfully!");
 
-      setTitle("");
-      setDescription("");
-      setPhones([""]);
-      setImages([]);
-      setResume(null);
+      setSuper_text("");
+      setSub_text("");
+      setDebs_hero([]);
       setShowModal(false);
 
       fetchData();
@@ -200,9 +171,9 @@ export default function HeroPage() {
                   {rows.reduce((acc, row) => {
                     try {
                       const imgs =
-                        typeof row.images === "string"
-                          ? JSON.parse(row.images)
-                          : row.images;
+                        typeof row.debs_hero === "string"
+                          ? JSON.parse(row.debs_hero)
+                          : row.debs_hero;
                       return acc + (Array.isArray(imgs) ? imgs.length : 0);
                     } catch {
                       return acc;
@@ -271,7 +242,7 @@ export default function HeroPage() {
 
               <button
                 onClick={() => setShowModal(true)}
-                className="px-6 py-2 bg-[#C66140] hover:bg-[#b5563a] text-white rounded-lg transition-colors flex items-center gap-2 shadow-sm"
+                className="px-6 py-2 bg-[#8B5CF6] hover:bg-[#8B5CF6] text-white rounded-lg transition-colors flex items-center gap-2 shadow-sm"
               >
                 <Plus className="w-5 h-5" />
                 Create Hero
@@ -282,7 +253,7 @@ export default function HeroPage() {
           <div className="overflow-x-auto">
             {fetching ? (
               <div className="flex items-center justify-center py-20">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#C66140]"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8B5CF6]"></div>
               </div>
             ) : rows.length === 0 ? (
               <div className="text-center py-20">
@@ -293,7 +264,7 @@ export default function HeroPage() {
                 </p>
                 <button
                   onClick={() => setShowModal(true)}
-                  className="px-6 py-2 bg-[#C66140] hover:bg-[#b5563a] text-white rounded-lg transition-colors inline-flex items-center gap-2"
+                  className="px-6 py-2 bg-[#8B5CF6] hover:bg-[#8B5CF6] text-white rounded-lg transition-colors inline-flex items-center gap-2"
                 >
                   <Plus className="w-5 h-5" />
                   Create Hero
@@ -313,13 +284,7 @@ export default function HeroPage() {
                       Description
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Phones
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Image
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Resume
+                      Images
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Actions
@@ -337,39 +302,24 @@ export default function HeroPage() {
                         #{item.id}
                       </td>
                       <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                        {item.title}
+                        {item.super_text}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-600 max-w-xs truncate">
-                        {item.description}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
-                        {(() => {
-                          try {
-                            const phoneList =
-                              typeof item.phones === "string"
-                                ? JSON.parse(item.phones)
-                                : item.phones;
-                            return Array.isArray(phoneList)
-                              ? phoneList.join(", ")
-                              : item.phones;
-                          } catch {
-                            return item.phones;
-                          }
-                        })()}
+                        {item.sub_text}
                       </td>
                       <td className="px-6 py-4">
                         {(() => {
                           try {
                             const imageUrls =
-                              typeof item.images === "string"
-                                ? JSON.parse(item.images)
-                                : item.images;
+                              typeof item.debs_hero === "string"
+                                ? JSON.parse(item.debs_hero)
+                                : item.debs_hero;
                             const firstImage = imageUrls?.[0];
 
                             return firstImage ? (
                               <Image
                                 src={firstImage}
-                                alt={item.title}
+                                alt={item.super_text}
                                 width={60}
                                 height={60}
                                 className="rounded-lg object-cover cursor-pointer hover:opacity-80 transition-opacity"
@@ -388,21 +338,6 @@ export default function HeroPage() {
                             );
                           }
                         })()}
-                      </td>
-                      <td className="px-6 py-4">
-                        {item.resumes ? (
-                          <button
-                            onClick={() => setSelectedResume(item.resumes)}
-                            className="text-[#C66140] hover:underline text-sm flex items-center gap-1"
-                          >
-                            <FileText className="w-4 h-4" />
-                            View
-                          </button>
-                        ) : (
-                          <span className="text-gray-400 text-sm">
-                            No resume
-                          </span>
-                        )}
                       </td>
 
                       <td className="px-6 py-4">
@@ -444,32 +379,6 @@ export default function HeroPage() {
           </div>
         )}
 
-        {/* Resume Modal */}
-        {selectedResume && (
-          <div
-            className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4"
-            onClick={() => setSelectedResume(null)}
-          >
-            <button
-              onClick={() => setSelectedResume(null)}
-              className="absolute top-4 right-4 text-white hover:text-gray-300 bg-black/50 rounded-full p-2"
-            >
-              <X className="w-6 h-6" />
-            </button>
-            <div className="bg-white rounded-lg p-8 max-w-2xl w-full">
-              <h3 className="text-xl font-bold mb-4">Resume</h3>
-              <a
-                href={selectedResume}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[#C66140] hover:underline"
-              >
-                Open Resume in New Tab
-              </a>
-            </div>
-          </div>
-        )}
-
         {/* Create Hero Modal */}
         {showModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -505,10 +414,10 @@ export default function HeroPage() {
                       Title *
                     </label>
                     <input
-                      className="w-full border border-gray-300 text-[#262624] rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
-                      placeholder="Enter hero title"
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
+                      className="w-full border border-gray-300 text-[#262624] rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent transition-all"
+                      placeholder="Enter hero super_text"
+                      value={super_text}
+                      onChange={(e) => setSuper_text(e.target.value)}
                     />
                   </div>
 
@@ -517,106 +426,39 @@ export default function HeroPage() {
                       Description *
                     </label>
                     <textarea
-                      className="w-full border border-gray-300 text-[#262624] rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all resize-none"
+                      className="w-full border border-gray-300 text-[#262624] rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent transition-all resize-none"
                       rows={4}
-                      placeholder="Enter hero description"
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder="Enter hero sub_text"
+                      value={sub_text}
+                      onChange={(e) => setSub_text(e.target.value)}
                     />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Phone Numbers *
-                    </label>
-                    {phones.map((phone, index) => (
-                      <div key={index} className="flex gap-3 mb-3">
-                        <input
-                          type="text"
-                          value={phone}
-                          className="flex-1 border border-gray-300 text-[#262624] rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
-                          placeholder="Enter 11-digit phone number"
-                          onChange={(e) =>
-                            handlePhoneChange(
-                              index,
-                              e.target.value.replace(/\D/g, "")
-                            )
-                          }
-                        />
-                        {phones.length > 1 && (
-                          <button
-                            type="button"
-                            className="bg-red-100 text-red-600 hover:bg-red-200 p-3 rounded-lg transition-colors"
-                            onClick={() => removePhoneField(index)}
-                          >
-                            <X className="w-5 h-5" />
-                          </button>
-                        )}
-                      </div>
-                    ))}
-
-                    <button
-                      type="button"
-                      className="text-[#C66140] hover:text-[#b5563a] font-medium text-sm flex items-center gap-2 mt-2"
-                      onClick={addPhoneField}
-                    >
-                      <Plus className="w-4 h-4" />
-                      Add Another Phone
-                    </button>
                   </div>
 
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                       Images
                     </label>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#C66140] transition-colors">
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#8B5CF6] transition-colors">
                       <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
                       <input
                         type="file"
                         multiple
                         accept="image/*"
                         onChange={(e) =>
-                          setImages(Array.from(e.target.files || []))
+                          setDebs_hero(Array.from(e.target.files || []))
                         }
                         className="hidden"
                         id="image-upload"
                       />
                       <label htmlFor="image-upload" className="cursor-pointer">
-                        <span className="text-[#C66140] hover:underline font-medium">
+                        <span className="text-[#8B5CF6] hover:underline font-medium">
                           Click to upload
                         </span>
                         <span className="text-gray-500"> or drag and drop</span>
                       </label>
-                      {images.length > 0 && (
+                      {debs_hero.length > 0 && (
                         <p className="text-sm text-gray-600 mt-2">
-                          {images.length} file(s) selected
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Resume (PDF)
-                    </label>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#C66140] transition-colors">
-                      <FileText className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                      <input
-                        type="file"
-                        accept=".pdf"
-                        onChange={(e) => setResume(e.target.files?.[0] || null)}
-                        className="hidden"
-                        id="resume-upload"
-                      />
-                      <label htmlFor="resume-upload" className="cursor-pointer">
-                        <span className="text-[#C66140] hover:underline font-medium">
-                          Click to upload
-                        </span>
-                        <span className="text-gray-500"> or drag and drop</span>
-                      </label>
-                      {resume && (
-                        <p className="text-sm text-gray-600 mt-2">
-                          {resume.name}
+                          {debs_hero.length} file(s) selected
                         </p>
                       )}
                     </div>
@@ -636,7 +478,7 @@ export default function HeroPage() {
                 <button
                   type="submit"
                   form="hero-form"
-                  className="flex-1 px-6 py-3 bg-[#C66140] hover:bg-[#b5563a] text-white rounded-lg transition-colors font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 px-6 py-3 bg-[#8B5CF6] hover:bg-[#8B5CF6] text-white rounded-lg transition-colors font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={loading}
                 >
                   {loading ? (

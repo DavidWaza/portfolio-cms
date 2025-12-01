@@ -12,7 +12,7 @@ export interface SidebarProps {
   setActive: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export function Sidebar({ active, setActive }: SidebarProps) {
+export function Sidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
@@ -49,10 +49,10 @@ export function Sidebar({ active, setActive }: SidebarProps) {
       href: "/dashboard/testimonial",
     },
     {
-      id: "about",
+      id: "about-me",
       label: "About Me",
       icon: "UserCircle",
-      href: "/dashboard/about",
+      href: "/dashboard/about-me",
     },
     {
       id: "settings",
@@ -97,9 +97,9 @@ export function Sidebar({ active, setActive }: SidebarProps) {
           className="p-2 rounded-md hover:bg-gray-100"
         >
           {!collapsed ? (
-            <Icons.CaretDoubleLeft size={20} weight="bold" color="#C66140" />
+            <Icons.CaretDoubleLeft size={20} weight="bold" color="#8B5CF6" />
           ) : (
-            <Icons.CaretDoubleRight size={20} weight="bold" color="#C66140" />
+            <Icons.CaretDoubleRight size={20} weight="bold" color="#8B5CF6" />
           )}
         </button>
 
@@ -108,7 +108,7 @@ export function Sidebar({ active, setActive }: SidebarProps) {
             collapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100"
           }`}
         >
-          <div className="flex items-center justify-center h-8 w-8 rounded-md bg-[#C66140] text-white">
+          <div className="flex items-center justify-center h-8 w-8 rounded-md bg-[#8B5CF6] text-white">
             <Icons.Rocket size={16} weight="bold" />
           </div>
           <div>
@@ -132,7 +132,7 @@ export function Sidebar({ active, setActive }: SidebarProps) {
                   href={item.href}
                   className={`group w-full flex items-center gap-3 py-2 px-3 rounded-md text-sm transition-colors ${
                     isActive
-                      ? "bg-indigo-50 text-[#C66140] ring-1 ring-indigo-100"
+                      ? "bg-indigo-50 text-[#8B5CF6] ring-1 ring-indigo-100"
                       : "text-slate-700 hover:bg-slate-50"
                   }`}
                 >
@@ -141,7 +141,7 @@ export function Sidebar({ active, setActive }: SidebarProps) {
                   {!collapsed && <span>{item.label}</span>}
 
                   {collapsed && isActive && (
-                    <span className="ml-auto w-1 h-6 bg-[#C66140] rounded-full" />
+                    <span className="ml-auto w-1 h-6 bg-[#8B5CF6] rounded-full" />
                   )}
                 </Link>
               </li>

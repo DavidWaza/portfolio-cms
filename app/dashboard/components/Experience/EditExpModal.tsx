@@ -233,7 +233,7 @@ export default function EditExpModal({
           <button
             type="button"
             onClick={handleUpdate}
-            className="flex-1 px-6 py-3 bg-[#C66140] hover:bg-green-700 text-white rounded-lg transition-colors font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-6 py-3 bg-[#8B5CF6] hover:bg-green-700 text-white rounded-lg transition-colors font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={loading}
           >
             {loading ? (

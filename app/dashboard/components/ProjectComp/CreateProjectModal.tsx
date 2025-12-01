@@ -149,7 +149,7 @@ export default function CreateProjectModal({
                 </label>
                 <input
                   type="text"
-                  className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
+                  className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent transition-all"
                   placeholder="Enter project title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
@@ -162,7 +162,7 @@ export default function CreateProjectModal({
                 </label>
                 <input
                   type="url"
-                  className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
+                  className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent transition-all"
                   placeholder="https://example.com"
                   value={projectLink}
                   onChange={(e) => setProjectLink(e.target.value)}
@@ -175,7 +175,7 @@ export default function CreateProjectModal({
                 </label>
                 <input
                   type="text"
-                  className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
+                  className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent transition-all"
                   placeholder="e.g. San Francisco, CA"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
@@ -188,7 +188,7 @@ export default function CreateProjectModal({
                 </label>
                 <input
                   type="text"
-                  className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
+                  className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent transition-all"
                   placeholder="e.g. Web App, Mobile App"
                   value={applicationType}
                   onChange={(e) => setApplicationType(e.target.value)}
@@ -202,7 +202,7 @@ export default function CreateProjectModal({
               </label>
               <textarea
                 rows={4}
-                className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all resize-none"
+                className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent transition-all resize-none"
                 placeholder="Brief description of the project"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -214,7 +214,7 @@ export default function CreateProjectModal({
                 Year *
               </label>
               <select
-                className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
+                className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent transition-all"
                 value={year}
                 onChange={(e) => setYear(e.target.value)}
               >
@@ -235,7 +235,7 @@ export default function CreateProjectModal({
                 <div key={index} className="flex gap-3 mb-3">
                   <input
                     type="text"
-                    className="flex-1 border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
+                    className="flex-1 border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent transition-all"
                     placeholder="e.g. React, Node.js, MongoDB"
                     value={tool}
                     onChange={(e) => handleToolChange(index, e.target.value)}
@@ -253,7 +253,7 @@ export default function CreateProjectModal({
               ))}
               <button
                 type="button"
-                className="text-[#C66140] hover:text-[#b5563a] font-medium text-sm flex items-center gap-2 mt-2"
+                className="text-[#8B5CF6] hover:text-[#8B5CF6] font-medium text-sm flex items-center gap-2 mt-2"
                 onClick={addToolField}
               >
                 <Plus className="w-4 h-4" />
@@ -265,7 +265,7 @@ export default function CreateProjectModal({
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Project Logo *
               </label>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#C66140] transition-colors">
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#8B5CF6] transition-colors">
                 <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
                 <input
                   type="file"
@@ -275,7 +275,7 @@ export default function CreateProjectModal({
                   id="logo-upload"
                 />
                 <label htmlFor="logo-upload" className="cursor-pointer">
-                  <span className="text-[#C66140] hover:underline font-medium">
+                  <span className="text-[#8B5CF6] hover:underline font-medium">
                     Click to upload
                   </span>
                   <span className="text-gray-500"> or drag and drop</span>
@@ -297,7 +297,7 @@ export default function CreateProjectModal({
           </button>
           <button
             type="submit"
-            className="flex-1 px-6 py-3 bg-[#C66140] hover:bg-[#b5563a] text-white rounded-lg transition-colors font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-6 py-3 bg-[#8B5CF6] hover:bg-[#8B5CF6] text-white rounded-lg transition-colors font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={loading}
           >
             {loading ? (

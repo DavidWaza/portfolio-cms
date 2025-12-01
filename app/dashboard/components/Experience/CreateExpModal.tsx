@@ -123,7 +123,7 @@ export default function CreateExpModal({
                 </label>
                 <input
                   type="text"
-                  className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
+                  className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent transition-all"
                   placeholder="Enter project title"
                   value={title_role}
                   onChange={(e) => setTitle_role(e.target.value)}
@@ -136,7 +136,7 @@ export default function CreateExpModal({
                 </label>
                 <input
                   type="url"
-                  className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
+                  className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent transition-all"
                   placeholder="Ex. Meta"
                   value={company}
                   onChange={(e) => setCompany(e.target.value)}
@@ -148,7 +148,7 @@ export default function CreateExpModal({
                 </label>
                 <input
                   type="text"
-                  className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
+                  className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent transition-all"
                   placeholder="Ex. Mar, 2000"
                   value={date_started}
                   onChange={(e) => setDate_started(e.target.value)}
@@ -159,7 +159,7 @@ export default function CreateExpModal({
                   End Date *
                 </label>
                 <input
-                  className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all resize-none"
+                  className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent transition-all resize-none"
                   placeholder="Ex. Mar, 2002"
                   value={date_ended}
                   onChange={(e) => setDate_ended(e.target.value)}
@@ -173,7 +173,7 @@ export default function CreateExpModal({
               </label>
               <input
                 type="text"
-                className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
+                className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent transition-all"
                 placeholder="e.g. San Francisco, CA"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
@@ -186,7 +186,7 @@ export default function CreateExpModal({
                 Job Type *
               </label>
               <input
-                className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all resize-none"
+                className="w-full border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent transition-all resize-none"
                 placeholder="Ex. Remote"
                 value={job_type}
                 onChange={(e) => setJob_type(e.target.value)}
@@ -201,7 +201,7 @@ export default function CreateExpModal({
                 <div key={index} className="flex gap-3 mb-3">
                   <input
                     type="text"
-                    className="flex-1 border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#C66140] focus:border-transparent transition-all"
+                    className="flex-1 border border-gray-300 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#8B5CF6] focus:border-transparent transition-all"
                     placeholder="Ex. I handled the api integration with axios"
                     value={des}
                     onChange={(e) => handleToolChange(index, e.target.value)}
@@ -219,7 +219,7 @@ export default function CreateExpModal({
               ))}
               <button
                 type="button"
-                className="text-[#C66140] hover:text-[#b5563a] font-medium text-sm flex items-center gap-2 mt-2"
+                className="text-[#8B5CF6] hover:text-[#8B5CF6] font-medium text-sm flex items-center gap-2 mt-2"
                 onClick={addToolField}
               >
                 <Plus className="w-4 h-4" />
@@ -241,7 +241,7 @@ export default function CreateExpModal({
           <button
             type="submit"
             onClick={handleSubmit}
-            className="flex-1 px-6 py-3 bg-[#C66140] hover:bg-[#b5563a] text-white rounded-lg transition-colors font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-6 py-3 bg-[#8B5CF6] hover:bg-[#8B5CF6] text-white rounded-lg transition-colors font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={loading}
           >
             {loading ? (

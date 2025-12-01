@@ -29,3 +29,16 @@ export type WorkExpProps = {
   job_responsibility: string[];
   created_at?: string;
 }
+
+export type TestimonialProps = {
+  id:number,
+  name:string;
+  role:string;
+  testimonial:string
+}
+
+export type AboutmeProps =  {
+  id:number,
+  title:string;
+  aboutme_text:string;
+}

@@ -37,7 +37,7 @@ export default function DynamicTable<T extends Record<string, any>>({
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#C66140]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8B5CF6]"></div>
       </div>
     );
   }

@@ -1,113 +1,75 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { getSupabase } from "@/config/supabaseClient";
 import { Plus, Layers } from "lucide-react";
-import { ServiceProps } from "@/lib/types";
-import ServiceTable from "../components/ServiceComp/ServiceTable";
-import ViewServiceModal from "../components/ServiceComp/ViewServiceModal";
-import EditServiceModal from "../components/ServiceComp/EditServiceModal";
-import CreateServiceModal from "../components/ServiceComp/CreateServiceModal";
+import { AboutmeProps } from "@/lib/types";
+import CreateTestimonialModal from "../components/Testimonial/CreateTestimonialModal";
+import ViewTestimonialModal from "../components/Testimonial/ViewTestimonialModal";
+import EditTestimonialModal from "../components/Testimonial/EditTestimonialModal";
+import AboutmeTable from "../components/AboutMe/AboutmeTable";
+import CreateEditAboutmeSection from "../components/AboutMe/CreateAboutmeSection";
 
-export default function ServicePage() {
-  const [title, setTitle] = useState("");
-  const [description, setShortDescription] = useState("");
-  const [roles, setRoles] = useState([""]);
-
-  const [, setLoading] = useState(false);
-  const [, setError] = useState("");
+export default function ExperiencePage() {
   const [showModal, setShowModal] = useState(false);
-
-  const [rows, setRows] = useState<ServiceProps[]>([]);
-  const [fetching, setFetching] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [selectedProject, setSelectedProject] = useState<ServiceProps | null>(
-    null
-  );
-  const [, setSelectedLogo] = useState<string | null>(null);
+  const [selectedTestimonial, setSelectedTestimonial] = useState<AboutmeProps | null>(null);
+  const [rows, setRows] = useState<AboutmeProps[]>([]);
+  const [fetching, setFetching] = useState(false);
 
   const supabase = getSupabase();
 
-  const fetchServices = async () => {
+  const fetchAboutMe = async () => {
     setFetching(true);
-    const { data, error } = await supabase
-      .from("services")
-      .select("*")
-      .order("created_at", { ascending: false });
+    try {
+      const { data, error } = await supabase
+        .from("about_me")
+        .select("*")
+        .order("created_at", { ascending: false });
 
-    if (error) {
-      toast.error("Failed to fetch services");
-    } else {
+      if (error) throw error;
       setRows(data || []);
+    } catch (err) {
+      toast.error("Failed to fetch testimonial");
+      console.error(err);
+    } finally {
+      setFetching(false);
     }
-    setFetching(false);
   };
 
   useEffect(() => {
-    fetchServices();
+    fetchAboutMe();
   }, []);
 
-  const deleteProject = async (id: number) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this service?"
-    );
-    if (!confirmed) return;
-
-    const { error } = await supabase.from("services").delete().eq("id", id);
-
-    if (error) {
-      toast.error("Failed to delete service");
-    } else {
-      toast.success("Service deleted successfully");
-      fetchServices();
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-
-    try {
-      if (!title.trim()) throw new Error("Title is required");
-      if (!description.trim()) throw new Error("Short description required");
-      if (!roles) throw new Error("Role/Roles required");
-
-      const { error: insertError } = await supabase.from("services").insert({
-        title,
-        description,
-        roles,
-      });
-
-      if (insertError) throw insertError;
-
-      toast.success("Project created successfully!");
-
-      setTitle("");
-      setShortDescription("");
-      setRoles([]);
-      setShowModal(false);
-
-      fetchServices();
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "An unknown error occurred";
-      toast.error(message);
-      setError(message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const openEditModal = (service: ServiceProps) => {
-    setSelectedProject(service);
+  const openEditModal = (exp: AboutmeProps) => {
+    setSelectedTestimonial(exp);
     setShowEditModal(true);
   };
 
-  const openViewModal = (service: ServiceProps) => {
-    setSelectedProject(service);
+  const openViewModal = (exp: AboutmeProps) => {
+    setSelectedTestimonial(exp);
     setShowViewModal(true);
+  };
+
+  const deleteTestimonial = async (id: number) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this project?"
+    );
+    if (!confirmed) return;
+
+    const { error } = await supabase
+      .from("about_me")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      toast.error("Failed to delete testimonial");
+    } else {
+      toast.success("Testimonial deleted successfully");
+      fetchAboutMe();
+    }
   };
 
   return (
@@ -115,20 +77,20 @@ export default function ServicePage() {
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Service Management
+            About Me
           </h1>
-          <p className="text-gray-600">Manage your portfolio services</p>
+          <p className="text-gray-600">
+            Manage your portfolio
+          </p>
         </div>
-
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="p-6 border-b border-gray-100 flex justify-between items-center">
             <h2 className="text-xl font-semibold text-gray-900">
-              Service Records
+              About Me Records
             </h2>
-
             <div className="flex gap-3">
               <button
-                onClick={fetchServices}
+                onClick={fetchAboutMe}
                 className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors flex items-center gap-2"
               >
                 {/* refresh icon */}
@@ -152,7 +114,7 @@ export default function ServicePage() {
                 onClick={() => setShowModal(true)}
                 className="px-6 py-2 bg-[#8B5CF6] hover:bg-[#8B5CF6] text-white rounded-lg transition-colors flex items-center gap-2 shadow-sm"
               >
-                <Plus className="w-5 h-5" /> Create Service(s)
+                <Plus className="w-5 h-5" /> Create Testimonial
               </button>
             </div>
           </div>
@@ -165,43 +127,44 @@ export default function ServicePage() {
             ) : rows.length === 0 ? (
               <div className="text-center py-20">
                 <Layers className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500 text-lg mb-2">No projects found</p>
+                <p className="text-gray-500 text-lg mb-2">
+                  No testimonial found
+                </p>
                 <p className="text-gray-400 text-sm mb-6">
-                  Get started by creating your first project
+                  Get started by creating your first testimonial
                 </p>
                 <button
                   onClick={() => setShowModal(true)}
                   className="px-6 py-2 bg-[#8B5CF6] hover:bg-[#8B5CF6] text-white rounded-lg transition-colors inline-flex items-center gap-2"
                 >
-                  <Plus className="w-5 h-5" /> Create Project
+                  <Plus className="w-5 h-5" /> Create Testimonial
                 </button>
               </div>
             ) : (
-              <ServiceTable
+              <AboutmeTable
                 rows={rows}
                 onView={openViewModal}
                 onEdit={openEditModal}
-                onDelete={deleteProject}
-                onLogoClick={setSelectedLogo}
+                onDelete={deleteTestimonial}
               />
             )}
           </div>
         </div>
-        <CreateServiceModal
+        <CreateEditAboutmeSection
           isOpen={showModal}
           onClose={() => setShowModal(false)}
-          onSuccess={fetchServices}
+          onSuccess={fetchAboutMe}
         />
-        <ViewServiceModal
+        <ViewTestimonialModal
           isOpen={showViewModal}
-          data={selectedProject}
+          service={selectedTestimonial}
           onClose={() => setShowViewModal(false)}
         />
-        <EditServiceModal
+        <EditTestimonialModal
           isOpen={showEditModal}
-          services={selectedProject}
+          test={selectedTestimonial}
           onClose={() => setShowEditModal(false)}
-          onSuccess={fetchServices}
+          onSuccess={fetchAboutMe}
         />
       </div>
     </div>

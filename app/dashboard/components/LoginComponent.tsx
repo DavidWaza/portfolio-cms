@@ -80,7 +80,7 @@ const Login = () => {
         <CardHeader className="flex flex-col items-center pt-12 pb-8 px-8 relative">
           <div
             className="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 shadow-lg"
-            style={{ backgroundColor: "#C6613F" }}
+            style={{ backgroundColor: "#8B5CF6" }}
           >
             <Briefcase className="w-10 h-10 text-white" />
           </div>
@@ -93,7 +93,7 @@ const Login = () => {
           </p>
           <div
             className="w-16 h-1 rounded-full mt-4"
-            style={{ backgroundColor: "#C6613F" }}
+            style={{ backgroundColor: "#8B5CF6" }}
           ></div>
         </CardHeader>
 
@@ -145,7 +145,7 @@ const Login = () => {
           </div>
           <Button
             className="w-full text-white py-6 font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] border-0 disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{ backgroundColor: "#C6613F" }}
+            style={{ backgroundColor: "#8B5CF6" }}
             onClick={login}
             disabled={loading}
           >

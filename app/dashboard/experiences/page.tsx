@@ -132,7 +132,7 @@ export default function ExperiencePage() {
 
               <button
                 onClick={() => setShowModal(true)}
-                className="px-6 py-2 bg-[#C66140] hover:bg-[#b5563a] text-white rounded-lg transition-colors flex items-center gap-2 shadow-sm"
+                className="px-6 py-2 bg-[#8B5CF6] hover:bg-[#8B5CF6] text-white rounded-lg transition-colors flex items-center gap-2 shadow-sm"
               >
                 <Plus className="w-5 h-5" /> Create Experience
               </button>
@@ -142,7 +142,7 @@ export default function ExperiencePage() {
           <div className="overflow-x-auto">
             {fetching ? (
               <div className="flex items-center justify-center py-20">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#C66140]"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8B5CF6]"></div>
               </div>
             ) : rows.length === 0 ? (
               <div className="text-center py-20">
@@ -155,7 +155,7 @@ export default function ExperiencePage() {
                 </p>
                 <button
                   onClick={() => setShowModal(true)}
-                  className="px-6 py-2 bg-[#C66140] hover:bg-[#b5563a] text-white rounded-lg transition-colors inline-flex items-center gap-2"
+                  className="px-6 py-2 bg-[#8B5CF6] hover:bg-[#8B5CF6] text-white rounded-lg transition-colors inline-flex items-center gap-2"
                 >
                   <Plus className="w-5 h-5" /> Create Project
                 </button>
